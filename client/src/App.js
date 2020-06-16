@@ -7,7 +7,10 @@ import Col from "react-bootstrap/Col";
 import SideBar from "./components/SideBar";
 import Row from "react-bootstrap/Row";
 import Showroom from "./components/Showroom";
+import {Switch} from 'react-router';
 import Car from "./entities/Car";
+import {Redirect, Route} from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
 async function getBrands() { //fake loading, as it was an API call
     return new Promise( resolve => {
@@ -19,8 +22,11 @@ async function getBrands() { //fake loading, as it was an API call
 
 async function getCars() { //fake loading, as it was an API call
     return new Promise( resolve => {
-        const car = new Car("Panda", "Fiat", "A");
-        const cars = [car];
+        const cars = [];
+        for(let i = 0; i < 9; i++) {
+            const car = new Car("Panda", "Fiat", "A");
+            cars.push(car);
+        }
         resolve(cars);
     })
 }
@@ -94,25 +100,38 @@ class App extends Component {
                 <Header/>
 
                 <Container fluid>
-                    <Row className="vheight-100">
-                        <Col sm={4} bg="light" id="left-sidebar" className="col-12 col-md-3 col-xl-2 below-nav">
-                            <SideBar onLog = {this.log} onCheckCategories = {this.setCheckedCategories}
-                                     onCheckBrands = {this.setCheckedBrands}
-                                     categories_checkbox = {this.state.categories_checkbox}
-                                     brands_checkbox = {this.state.brands_checkbox}
-                                     brands = {this.state.brands}
-                            />
-                        </Col>
+                    <Switch>
 
-                        <Col sm={10} className="below-nav">
-                            <Showroom cars={this.state.cars}/>
-                        </Col>
-                    </Row>
+                        <Route path="/showroom">
+                            <Row className="vheight-100">
+                                <Col sm={4} bg="light" id="left-sidebar" className="col-12 col-md-3 col-xl-2 below-nav">
+                                    <SideBar onLog = {this.log} onCheckCategories = {this.setCheckedCategories}
+                                             onCheckBrands = {this.setCheckedBrands}
+                                             categories_checkbox = {this.state.categories_checkbox}
+                                             brands_checkbox = {this.state.brands_checkbox}
+                                             brands = {this.state.brands}
+                                    />
+                                </Col>
 
+                                <Col sm={10} className="below-nav">
+                                    <Showroom cars={this.state.cars}/>
+                                </Col>
+                            </Row>
+                        </Route>
+
+                        <Route path="/booking">
+
+                        </Route>
+
+                        <Route>
+                            <Redirect to="/showroom"/>
+                        </Route>
+
+                    </Switch>
                 </Container>
             </AuthContext.Provider>
         );
     }
 }
 
-export default App;
+export default withRouter(App);

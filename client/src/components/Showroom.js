@@ -20,7 +20,7 @@ class Showroom extends Component {
 
     render() {
         return (
-            <Container>
+            <Container fluid>
                 <Row>
                     {this.props.cars.map(this.createCard)}
                 </Row>
