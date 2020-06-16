@@ -3,6 +3,7 @@ import Navbar from 'react-bootstrap/Navbar'
 import Nav from "react-bootstrap/Nav";
 import LoginForm from "./LoginForm";
 import Image from "react-bootstrap/Image";
+import {NavLink} from 'react-router-dom';
 
 
 const Header = () => {
@@ -15,8 +16,8 @@ const Header = () => {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
-                    <Nav.Link href="#showroom">Showroom</Nav.Link>
-                    <Nav.Link href="#booking">Booking</Nav.Link>
+                    <NavLink className="nav-link" to="/showroom">Showroom</NavLink>
+                    <NavLink className="nav-link" to="/booking">Booking</NavLink>
                 </Nav>
                 <LoginForm/>
             </Navbar.Collapse>

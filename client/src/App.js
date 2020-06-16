@@ -11,6 +11,7 @@ import {Switch} from 'react-router';
 import Car from "./entities/Car";
 import {Redirect, Route} from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
+import InteractiveConfiguration from "./components/InteractiveConfiguration";
 
 async function getBrands() { //fake loading, as it was an API call
     return new Promise( resolve => {
@@ -120,11 +121,15 @@ class App extends Component {
                         </Route>
 
                         <Route path="/booking">
-
+                            <Row className="vheight-100">
+                                <Col sm={12} className="below-nav">
+                                    <InteractiveConfiguration/>
+                                </Col>
+                            </Row>
                         </Route>
 
                         <Route>
-                            <Redirect to="/showroom"/>
+                            <Redirect to="/showroom" />
                         </Route>
 
                     </Switch>
