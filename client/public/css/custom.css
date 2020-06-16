@@ -4,5 +4,20 @@
 }
 
 .below-nav {
-    padding-top: 1rem;
+    padding-top: 4rem;
+}
+
+/* SideBar */
+#left-sidebar {
+    overflow-y: scroll;
+}
+
+.list-title {
+    font-size: large;
+}
+
+/* Showroom */
+
+.car-card {
+    width: 17.3rem;
 }

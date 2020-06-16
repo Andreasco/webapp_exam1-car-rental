@@ -7,7 +7,7 @@ import Image from "react-bootstrap/Image";
 
 const Header = () => {
     return(
-        <Navbar sticky="top" variant="dark" bg="primary"  expand="lg">
+        <Navbar fixed="top" variant="dark" bg="primary"  expand="lg">
             <Navbar.Brand href="index.html">
 
                 <Image width="200" height="30" className="img-logo" src="/svg/logo_white.svg"/>

@@ -6,10 +6,21 @@ import Container from "react-bootstrap/Container";
 import Col from "react-bootstrap/Col";
 import SideBar from "./components/SideBar";
 import Row from "react-bootstrap/Row";
+import Showroom from "./components/Showroom";
+import Car from "./entities/Car";
 
 async function getBrands() { //fake loading, as it was an API call
     return new Promise( resolve => {
-        const cars = ['Fiat', 'Audi', 'BMW'];
+        const brands = ['Fiat', 'Audi', 'BMW', 'Mercedes',
+            "A", "B", "C", "D", "E"];
+        resolve(brands);
+    })
+}
+
+async function getCars() { //fake loading, as it was an API call
+    return new Promise( resolve => {
+        const car = new Car("Panda", "Fiat", "A");
+        const cars = [car];
         resolve(cars);
     })
 }
@@ -33,6 +44,10 @@ class App extends Component {
     }
 
     componentDidMount() {
+        getCars().then((c) => {
+            this.setState({cars : c});
+        })
+
         getBrands().then((b) => {
             this.setState({ brands: b });
 
@@ -87,6 +102,10 @@ class App extends Component {
                                      brands_checkbox = {this.state.brands_checkbox}
                                      brands = {this.state.brands}
                             />
+                        </Col>
+
+                        <Col sm={10} className="below-nav">
+                            <Showroom cars={this.state.cars}/>
                         </Col>
                     </Row>
 

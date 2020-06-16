@@ -31,9 +31,9 @@ class SideBar extends Component {
     render() {
         return (
             <>
-                <ListGroup  variant="flush">
+                <ListGroup id="left-sidebar" as="ul" variant="flush">
                     <ListGroup.Item className="p-3 list-title">
-                        <b style={{fontSize: '20px'}}>Car category</b>
+                        <b>Car category</b>
                     </ListGroup.Item>
 
                     <ListGroup.Item >
@@ -124,7 +124,7 @@ class SideBar extends Component {
                     </ListGroup.Item>
 
                     <ListGroup.Item className="p-3 mt-2 list-title">
-                        <b style={{fontSize: '20px'}}>Car brands</b>
+                        <b>Car brands</b>
                     </ListGroup.Item>
 
                     {this.props.brands.map(this.createBrand)}
