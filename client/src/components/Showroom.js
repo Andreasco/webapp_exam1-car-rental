@@ -1,10 +1,11 @@
-import React, {Component} from 'react';
+import React from 'react';
 import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 
-class Showroom extends Component {
-    createCard = (car) =>{
+const Showroom = (props) => {
+
+    const createCard = (car) =>{
         return(
             <Card key={car.model} className="m-1 car-card">
                 <Card.Body>
@@ -18,15 +19,13 @@ class Showroom extends Component {
         )
     }
 
-    render() {
-        return (
-            <Container fluid>
-                <Row>
-                    {this.props.cars.map(this.createCard)}
-                </Row>
-            </Container>
-        );
-    }
+    return (
+        <Container fluid>
+            <Row>
+                {props.cars.map(createCard)}
+            </Row>
+        </Container>
+    );
 }
 
 export default Showroom;

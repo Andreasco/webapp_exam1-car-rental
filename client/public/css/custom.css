@@ -21,3 +21,13 @@
 .car-card {
     width: 17.3rem;
 }
+
+/* Interactive Configuration */
+
+#checkbox-row{
+    margin-top: 10px;
+}
+
+.form-check{
+    margin-right: 10px;
+}
