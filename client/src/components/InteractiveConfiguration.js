@@ -1,10 +1,8 @@
 import React, {Component} from 'react';
 import {Redirect} from 'react-router-dom';
 import {AuthContext} from '../auth/AuthContext'
-import Card from "react-bootstrap/Card";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Form from "react-bootstrap/Form";
 import moment from 'moment';
 import RentalForm from "./RentalForm";
 
@@ -38,7 +36,7 @@ class InteractiveConfiguration extends Component {
                 {(context) => (
                     <>
                         {context.authErr && <Redirect to = "/login" />}
-                        <Row className="vheight-100">
+                        <Row>
                             <Col sm={6}>
                                 <RentalForm state={this.state} onChange={this.updateField}/>
                             </Col>

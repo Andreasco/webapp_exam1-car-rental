@@ -15,8 +15,7 @@ import InteractiveConfiguration from "./components/InteractiveConfiguration";
 
 async function getBrands() { //fake loading, as it was an API call
     return new Promise( resolve => {
-        const brands = ['Fiat', 'Audi', 'BMW', 'Mercedes',
-            "A", "B", "C", "D", "E"];
+        const brands = ['Fiat', 'Audi', 'BMW', 'Mercedes'];
         resolve(brands);
     })
 }
