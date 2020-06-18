@@ -68,21 +68,15 @@ class App extends Component {
     }
 
     setCheckedCategories = (event) => {
-        const newCategories = this.state.categories_checkbox;
+        const newCategories = {...this.state.categories_checkbox};
         newCategories[event.target.name] = event.target.checked;
         this.setState({categories_checkbox : newCategories});
     }
 
     setCheckedBrands = (event) => {
-        const newBrands = this.state.brands_checkbox;
+        const newBrands = {...this.state.brands_checkbox};
         newBrands[event.target.name] = event.target.checked;
         this.setState({brands_checkbox : newBrands});
-    }
-
-    log = () => {
-        for (const key in this.state.categories_checkbox) {
-            console.log(`key = ${key} value = ${this.state.categories_checkbox[key]}`);
-        }
     }
 
     render () {
@@ -105,7 +99,7 @@ class App extends Component {
                         <Route path="/showroom">
                             <Row className="vheight-100">
                                 <Col sm={4} bg="light" id="left-sidebar" className="col-12 col-md-3 col-xl-2 below-nav">
-                                    <SideBar onLog = {this.log} onCheckCategories = {this.setCheckedCategories}
+                                    <SideBar onCheckCategories = {this.setCheckedCategories}
                                              onCheckBrands = {this.setCheckedBrands}
                                              categories_checkbox = {this.state.categories_checkbox}
                                              brands_checkbox = {this.state.brands_checkbox}

@@ -37,31 +37,31 @@ const RentalForm = (props) => {
                         <Form.Row>
                             <Form.Group as={Col} controlId="carCategory">
                                 <Form.Label>Car category</Form.Label>
-                                <Form.Control as="select" defaultValue=""
+                                <Form.Control as="select"
                                               name="carCategory"
                                               value={props.state.carCategory}
                                               onChange={(ev) => props.onChange(ev.target.name, ev.target.value)}
                                 >
                                     <option/>
-                                    <option>A</option>
-                                    <option>B</option>
-                                    <option>C</option>
-                                    <option>D</option>
-                                    <option>E</option>
+                                    <option value={0}>A</option>
+                                    <option value={1}>B</option>
+                                    <option value={2}>C</option>
+                                    <option value={3}>D</option>
+                                    <option value={4}>E</option>
                                 </Form.Control>
                             </Form.Group>
 
                             <Form.Group as={Col} controlId="driverAge">
                                 <Form.Label>Driver's age</Form.Label>
-                                <Form.Control as="select" defaultValue=""
+                                <Form.Control as="select"
                                               name="driverAge"
                                               value={props.state.driverAge}
                                               onChange={(ev) => props.onChange(ev.target.name, ev.target.value)}
                                 >
                                     <option/>
-                                    <option>Under 25</option>
-                                    <option>25-65 years old</option>
-                                    <option>Over 65</option>
+                                    <option value={0}>Under 25</option>
+                                    <option value={1}>25-65 years old</option>
+                                    <option value={2}>Over 65</option>
                                 </Form.Control>
                             </Form.Group>
                         </Form.Row>
@@ -69,22 +69,22 @@ const RentalForm = (props) => {
                         <Form.Row>
                             <Form.Group as={Col} controlId="kilometersPerDay">
                                 <Form.Label>Estimated kilometers per day</Form.Label>
-                                <Form.Control as="select" defaultValue=""
+                                <Form.Control as="select"
                                               name="kilometersPerDay"
                                               value={props.state.kilometersPerDay}
                                               onChange={(ev) => props.onChange(ev.target.name, ev.target.value)}
                                 >
                                     <option/>
-                                    <option>Less than 50km</option>
-                                    <option>Less than 150km</option>
-                                    <option>Unlimited</option>
+                                    <option value={0}>Less than 50km</option>
+                                    <option value={1}>Less than 150km</option>
+                                    <option value={2}>Unlimited</option>
                                 </Form.Control>
                             </Form.Group>
 
                             <Form.Group as={Col} controlId="extraDrivers">
                                 <Form.Group controlId="extraDrivers">
                                     <Form.Label>Number of extra drivers</Form.Label>
-                                    <Form.Control as="select" defaultValue="0"
+                                    <Form.Control as="select"
                                                   name="extraDrivers"
                                                   value={props.state.extraDrivers}
                                                   onChange={(ev) => props.onChange(ev.target.name, ev.target.value)}
