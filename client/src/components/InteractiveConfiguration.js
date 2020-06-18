@@ -43,7 +43,7 @@ class InteractiveConfiguration extends Component {
             },
 
             //show the price when the fields are filled
-            showPrice : true,
+            showPrice : false,
 
             //data from the server
             numberOfCarsAvailable : "10", //tell the user how many cars are available
@@ -94,6 +94,7 @@ class InteractiveConfiguration extends Component {
         const totalPrice = basePrice + kmFee + ageFee + extraDriversFee + extraInsuranceFee;
 
         //will be used to show the detail of the price
+        //converted into strings because i'm using only strings data as a standard
         return {
             totalPrice : totalPrice+"",
             fees : {
@@ -109,7 +110,9 @@ class InteractiveConfiguration extends Component {
     calculateDuration = () => {
         const a = moment(this.state.startingDay);
         const b = moment(this.state.endingDay);
-        return b.diff(a, 'days') + 1 + ""; //+1 because commonly we say 1 day rental even if we return it on the same day and so on...
+        //converted into strings because i'm using only strings data as a standard
+        //+1 because commonly we say 1 day rental even if we return it on the same day and so on...
+        return b.diff(a, 'days') + 1 + "";
     }
 
     book = () => {
