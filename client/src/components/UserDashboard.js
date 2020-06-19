@@ -161,7 +161,7 @@ class UserDashboard extends Component {
                                 </Table>
 
                                 <h2>Future rentals</h2>
-                                <Table responsive hover>
+                                <Table responsive hover >
                                     <thead>
                                     <tr>
                                         <th>Starting day</th>
@@ -179,7 +179,7 @@ class UserDashboard extends Component {
                                     </tbody>
                                 </Table>
 
-                                <Button variant="warning" onClick={this.deleteReservations}>Delete selected</Button>
+                                <Button className="mb-5" variant="warning" onClick={this.deleteReservations}>Delete selected</Button>
                             </Col>
                         </Row>
                     </>
