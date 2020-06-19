@@ -31,3 +31,9 @@
 .form-check{
     margin-right: 10px;
 }
+
+/* User Dashboard */
+
+tr.active{
+    background-color: #ececec;
+}

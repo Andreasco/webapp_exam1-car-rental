@@ -12,6 +12,8 @@ import Car from "./entities/Car";
 import {Redirect, Route} from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
 import InteractiveConfiguration from "./components/InteractiveConfiguration";
+import UserDashboard from "./components/UserDashboard";
+import LoginNotice from "./components/LoginNotice";
 
 async function getBrands() { //fake loading, as it was an API call
     return new Promise( resolve => {
@@ -55,14 +57,16 @@ class App extends Component {
         })
 
         getBrands().then((b) => {
-            this.setState({ brands: b });
-
             // creation of the brands_checkbox in the state
             const brands_checkbox = {};
             b.forEach((brand) => {
                 brands_checkbox[brand] = false;
+            });
+
+            this.setState({
+                brands : b,
+                brands_checkbox : brands_checkbox,
             })
-            this.setState({brands_checkbox : brands_checkbox})
         });
 
     }
@@ -95,6 +99,13 @@ class App extends Component {
 
                 <Container fluid>
                     <Switch>
+                        <Route path="/login">
+                            <Row className="vheight-100">
+                                <Col sm={12} className="below-nav">
+                                    <LoginNotice/>
+                                </Col>
+                            </Row>
+                        </Route>
 
                         <Route path="/showroom">
                             <Row className="vheight-100">
@@ -117,6 +128,14 @@ class App extends Component {
                             <Row className="vheight-100">
                                 <Col sm={12} className="below-nav">
                                     <InteractiveConfiguration/>
+                                </Col>
+                            </Row>
+                        </Route>
+
+                        <Route path="/user/:username">
+                            <Row className="vheight-100">
+                                <Col sm={12} className="below-nav">
+                                    <UserDashboard/>
                                 </Col>
                             </Row>
                         </Route>
