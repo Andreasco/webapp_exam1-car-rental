@@ -24,11 +24,14 @@ async function getBrands() { //fake loading, as it was an API call
 
 async function getCars() { //fake loading, as it was an API call
     return new Promise( resolve => {
-        const cars = [];
-        for(let i = 0; i < 9; i++) {
-            const car = new Car("Panda", "Fiat", "A");
-            cars.push(car);
-        }
+        const cars = [
+            new Car("Panda", "Fiat", "D"),
+            new Car("500", "Fiat", "E"),
+            new Car("500XL", "Fiat", "B"),
+            new Car("Serie 1", "BMW", "D"),
+            new Car("Serie 2", "BMW", "C"),
+            new Car("Serie 3", "BMW", "B"),
+        ];
         resolve(cars);
     })
 }
@@ -38,7 +41,8 @@ class App extends Component {
     constructor(props)  {
         super(props);
         this.state = {
-            cars: [],
+            allCars: [],
+            filteredCars : [],
             brands: [],
             categories_checkbox : {
                 "A" : false,
@@ -53,7 +57,10 @@ class App extends Component {
 
     componentDidMount() {
         getCars().then((c) => {
-            this.setState({cars : c});
+            this.setState({
+                allCars : c,
+                filteredCars : c
+            });
         })
 
         getBrands().then((b) => {
@@ -71,16 +78,56 @@ class App extends Component {
 
     }
 
+    filter = () => {
+        const activeCategories = [];
+        const activeBrands = [];
+        for (const category in this.state.categories_checkbox){
+            if (this.state.categories_checkbox[category]) {
+                activeCategories.push(category);
+            }
+        }
+
+        for (const brand in this.state.brands_checkbox){
+            if (this.state.brands_checkbox[brand]) {
+                activeBrands.push(brand);
+            }
+        }
+
+        if (activeCategories.length === 0 && activeBrands.length === 0){
+            this.setState({filteredCars : [...this.state.allCars]}); //no active filter so i have to show all the cars
+        }
+        else {
+            const newFilteredCars = this.state.allCars.filter((car) => {
+                //if there are no categories or brands filters then every category or brand is ok
+                let categoryOk = activeCategories.length === 0;
+                let brandOk = activeBrands.length === 0;
+
+                //i can avoid to check if there are not active categories or brands, just for efficiency
+                if (activeCategories.length !== 0){
+                    categoryOk = activeCategories.includes(car.category);
+                }
+
+                if (activeBrands.length !== 0){
+                    brandOk = activeBrands.includes(car.brand);
+                }
+
+                return categoryOk && brandOk;
+            });
+
+            this.setState({filteredCars: newFilteredCars});
+        }
+    }
+
     setCheckedCategories = (event) => {
         const newCategories = {...this.state.categories_checkbox};
         newCategories[event.target.name] = event.target.checked;
-        this.setState({categories_checkbox : newCategories});
+        this.setState({categories_checkbox : newCategories}, this.filter);
     }
 
     setCheckedBrands = (event) => {
         const newBrands = {...this.state.brands_checkbox};
         newBrands[event.target.name] = event.target.checked;
-        this.setState({brands_checkbox : newBrands});
+        this.setState({brands_checkbox : newBrands}, this.filter);
     }
 
     render () {
@@ -119,7 +166,7 @@ class App extends Component {
                                 </Col>
 
                                 <Col sm={10} className="below-nav">
-                                    <Showroom cars={this.state.cars}/>
+                                    <Showroom cars={this.state.filteredCars}/>
                                 </Col>
                             </Row>
                         </Route>
