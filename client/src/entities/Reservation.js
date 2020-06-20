@@ -1,6 +1,7 @@
 class Reservation{
 
-    constructor(startingDay, endingDay, carCategory, driverAge, kmPerDay, extraDrivers, extraInsurance, price) {
+    constructor(id, startingDay, endingDay, carCategory, driverAge, kmPerDay, extraDrivers, extraInsurance, price) {
+        this.id = id;
         this.startingDay = startingDay;
         this.endingDay = endingDay;
         this.carCategory = carCategory;
