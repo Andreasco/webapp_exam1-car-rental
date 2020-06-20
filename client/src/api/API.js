@@ -10,8 +10,7 @@ async function isAuthenticated(){
     if(response.ok){
         return userJson;
     } else {
-        let err = {status: response.status, errObj:userJson};
-        throw err;  // An object with the error coming from the server
+        throw {status: response.status, errObj:userJson};  // An object with the error coming from the server
     }
 }
 
@@ -22,8 +21,7 @@ async function getCars() {
     if(response.ok){
         return carsJson.map((c) => new Car(c.model, c.brand, c.category));
     } else {
-        let err = {status: response.status, errObj:carsJson};
-        throw err;  // An object with the error coming from the server
+        throw {status: response.status, errObj:carsJson};  // An object with the error coming from the server
     }
 }
 
@@ -34,8 +32,7 @@ async function getBrands() {
     if(response.ok){
         return brandsJson; //strings array
     } else {
-        let err = {status: response.status, errObj:brandsJson};
-        throw err;  // An object with the error coming from the server
+        throw {status: response.status, errObj:brandsJson};  // An object with the error coming from the server
     }
 }
 
@@ -47,8 +44,7 @@ async function getReservations() {
         return reservationsJson.map((r) => new Reservation(r.id, r.startingDay, r.endingDay, r.carCategory, r.driverAge,
             r.kmPerDay, r.extraDrivers, r.extraInsurance, r.price));
     } else {
-        let err = {status: response.status, errObj:reservationsJson};
-        throw err;  // An object with the error coming from the server
+        throw {status: response.status, errObj:reservationsJson};  // An object with the error coming from the server
     }
 }
 
