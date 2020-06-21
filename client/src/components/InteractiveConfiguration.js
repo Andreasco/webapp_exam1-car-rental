@@ -124,7 +124,7 @@ class InteractiveConfiguration extends Component {
             <AuthContext.Consumer>
                 {(context) => (
                     <>
-                        {context.authErr && <Redirect to = "/login" />}
+                        {(!context.authUser || context.authErr) && <Redirect to = "/login" />}
                         <Row>
                             <Col sm={6}>
                                 <RentalForm state={this.state} onChange={this.updateField}/>

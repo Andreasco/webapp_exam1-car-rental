@@ -8,7 +8,7 @@ async function isAuthenticated(){
     const response = await fetch(baseURL + url);
     const userJson = await response.json();
     if(response.ok){
-        return userJson;
+        return userJson; //user object
     } else {
         throw {status: response.status, errObj:userJson};  // An object with the error coming from the server
     }
@@ -30,7 +30,11 @@ async function getBrands() {
     const response = await fetch(baseURL + url);
     const brandsJson = await response.json();
     if(response.ok){
-        return brandsJson; //strings array
+        const brandsArray = [];
+        for (const couple of brandsJson) {
+            brandsArray.push(couple["brand"]);
+        }
+        return brandsArray; //string array
     } else {
         throw {status: response.status, errObj:brandsJson};  // An object with the error coming from the server
     }
@@ -42,9 +46,20 @@ async function getReservations() {
     const reservationsJson = await response.json();
     if(response.ok){
         return reservationsJson.map((r) => new Reservation(r.id, r.startingDay, r.endingDay, r.carCategory, r.driverAge,
-            r.kmPerDay, r.extraDrivers, r.extraInsurance, r.price));
+            r.kmPerDay, r.extraDrivers, r.extraInsurance, r.price, r.user));
     } else {
         throw {status: response.status, errObj:reservationsJson};  // An object with the error coming from the server
+    }
+}
+
+async function getAvailableCars() {
+    let url = "/availableCars";
+    const response = await fetch(baseURL + url);
+    const availableCarsJson = await response.json();
+    if(response.ok){
+        return availableCarsJson; //a number
+    } else {
+        throw {status: response.status, errObj:availableCarsJson};  // An object with the error coming from the server
     }
 }
 
@@ -126,5 +141,5 @@ async function userLogout(username, password) {
     });
 }
 
-const API = { isAuthenticated, getCars, getBrands, getReservations, addReservation,deleteReservation, userLogin, userLogout} ;
+const API = { isAuthenticated, getCars, getBrands, getReservations, getAvailableCars, addReservation,deleteReservation, userLogin, userLogout} ;
 export default API;

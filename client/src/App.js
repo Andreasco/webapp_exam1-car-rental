@@ -14,6 +14,7 @@ import { withRouter } from 'react-router-dom';
 import InteractiveConfiguration from "./components/InteractiveConfiguration";
 import UserDashboard from "./components/UserDashboard";
 import LoginNotice from "./components/LoginNotice";
+import API from './api/API';
 
 async function getBrands() { //fake loading, as it was an API call
     return new Promise( resolve => {
@@ -51,31 +52,78 @@ class App extends Component {
                 "D" : false,
                 "E" : false
             },
-            brands_checkbox : {} //for clarity
+            brands_checkbox : {}, //for clarity
+            authUser : null,
+            authErr : null
         };
     }
 
     componentDidMount() {
-        getCars().then((c) => {
-            this.setState({
-                allCars : c,
-                filteredCars : c
-            });
-        })
-
-        getBrands().then((b) => {
-            // creation of the brands_checkbox in the state
-            const brands_checkbox = {};
-            b.forEach((brand) => {
-                brands_checkbox[brand] = false;
-            });
-
-            this.setState({
-                brands : b,
-                brands_checkbox : brands_checkbox,
-            })
+        API.isAuthenticated().then(
+            (user) => {
+                this.setState({authUser: user});
+            }
+        ).catch((err) => {
+            this.setState({authErr: err.errorObj});
         });
 
+        API.getCars()
+            .then((c) => {
+                this.setState({
+                    allCars : c,
+                    filteredCars : c
+                });
+            })
+            .catch((errorObj) => {
+                this.handleErrors(errorObj);
+            });
+
+        API.getBrands()
+            .then((b) => {
+                // creation of the brands_checkbox in the state
+                const brands_checkbox = {};
+                b.forEach((brand) => {
+                    brands_checkbox[brand] = false;
+                });
+
+                this.setState({
+                    brands : b,
+                    brands_checkbox : brands_checkbox,
+                });
+            })
+            .catch((errorObj) => {
+                this.handleErrors(errorObj);
+            });
+    }
+
+    handleErrors(err) {
+        if (err) {
+            if (err.status && err.status === 401) {
+                this.setState({authErr: err.errorObj});
+                this.props.history.push("/");
+            }
+        }
+    }
+
+    login = (username, password) => {
+        API.userLogin(username, password).then(
+            (user) => {
+                this.setState({authUser: user, authErr: null});
+                this.props.history.push("/");
+            }
+        ).catch(
+            (errorObj) => {
+                const err0 = errorObj.errors[0];
+                this.setState({authErr: err0});
+            }
+        );
+    }
+
+    logout = () => {
+        API.userLogout().then(() => {
+            this.setState({authUser: null,authErr: null});
+            API.getReservations().catch((errorObj)=>{this.handleErrors(errorObj)}); //TODO capire perchè si fa, probabilmente per chiamare volutamente la catch
+        });
     }
 
     filter = () => {
@@ -135,8 +183,8 @@ class App extends Component {
         const value = {
             authUser: this.state.authUser,
             authErr: this.state.authErr,
-            //TODO loginUser: this.login,
-            //TODO logoutUser: this.logout
+            loginUser: this.login,
+            logoutUser: this.logout
         }
 
         return(

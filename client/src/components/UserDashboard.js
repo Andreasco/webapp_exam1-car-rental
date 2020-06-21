@@ -120,7 +120,7 @@ class UserDashboard extends Component {
     }
 
     deleteReservations = () => {
-        //chiamata API per eliminare quelle prenotazioni
+        //TODO chiamata API per eliminare quelle prenotazioni
     }
 
     render() {
@@ -128,10 +128,11 @@ class UserDashboard extends Component {
             <AuthContext.Consumer>
                 {(context) => (
                     <>
-                        {context.authErr && <Redirect to = "/login" />}
+                        {(!context.authUser || context.authErr) && <Redirect to = "/login" />}
+
                         <Jumbotron fluid>
                             <Container>
-                                <h1>Hello {name}! Welcome to your dashboard.</h1>
+                                <h1>Hello {context.authUser ? context.authUser.name : null}! Welcome to your dashboard.</h1>
                                 <p>
                                     Here you can check your future and past reservations, moreover you can cancel any
                                     future reservation you want.
