@@ -16,27 +16,6 @@ import UserDashboard from "./components/UserDashboard";
 import LoginNotice from "./components/LoginNotice";
 import API from './api/API';
 
-async function getBrands() { //fake loading, as it was an API call
-    return new Promise( resolve => {
-        const brands = ['Fiat', 'Audi', 'BMW', 'Mercedes'];
-        resolve(brands);
-    })
-}
-
-async function getCars() { //fake loading, as it was an API call
-    return new Promise( resolve => {
-        const cars = [
-            new Car("Panda", "Fiat", "D"),
-            new Car("500", "Fiat", "E"),
-            new Car("500XL", "Fiat", "B"),
-            new Car("Serie 1", "BMW", "D"),
-            new Car("Serie 2", "BMW", "C"),
-            new Car("Serie 3", "BMW", "B"),
-        ];
-        resolve(cars);
-    })
-}
-
 class App extends Component {
 
     constructor(props)  {

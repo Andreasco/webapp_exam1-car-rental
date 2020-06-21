@@ -8,7 +8,6 @@ import Col from "react-bootstrap/Col";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 
-const name = "Andrea"; //da togliere e sostituire name con context.authUser.name
 async function getReservations() { //fake loading, as it was an API call
     return new Promise( resolve => {
         const reservations = [
