@@ -34,3 +34,19 @@ exports.getBrands = function () {
     });
 };
 
+exports.getCarsForCategory = function (category) {
+    return new Promise((resolve, reject) => {
+        const sql = "SELECT COUNT(*) FROM cars as c WHERE c.category = ?"
+        db.get(sql, [category], (err, row) => {
+            if (err)
+                reject(err);
+            else if (row) {
+                resolve(row);
+            }
+            else{
+                resolve(undefined);
+            }
+        });
+    });
+};
+

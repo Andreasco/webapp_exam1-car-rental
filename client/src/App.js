@@ -202,7 +202,7 @@ class App extends Component {
                         <Route path="/booking">
                             <Row className="vheight-100">
                                 <Col sm={12} className="below-nav">
-                                    <InteractiveConfiguration/>
+                                    <InteractiveConfiguration onError={this.handleErrors}/>
                                 </Col>
                             </Row>
                         </Route>

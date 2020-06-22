@@ -17,23 +17,35 @@ const PriceDialog = (props) => {
                     <Row className="justify-content-end">
                         <Col sm={6}>
                             <Row>
+                                {props.numberOfCarsAvailable !== 0 &&
                                 <ListGroup className="text-right" variant="flush">
-                                    <ListGroup.Item><b>Duration of the rental:</b> {props.duration} day{props.duration === "1" ? "" : "s"}</ListGroup.Item>
+                                    <ListGroup.Item>
+                                        <b>Duration of the rental:</b> {props.duration} day{props.duration === "1" ? "" : "s"}
+                                    </ListGroup.Item>
                                     <ListGroup.Item><b>Base price:</b> {props.fees["basePrice"]}€</ListGroup.Item>
                                     {props.fees["kmFee"] !== "0" &&
-                                        <ListGroup.Item><b>Kilometers fee:</b> {props.fees["kmFee"]}€</ListGroup.Item>
+                                    <ListGroup.Item><b>Kilometers fee:</b> {props.fees["kmFee"]}€</ListGroup.Item>
                                     }
                                     {props.fees["ageFee"] !== "0" &&
-                                        <ListGroup.Item><b>Driver's age fee:</b> {props.fees["ageFee"]}€</ListGroup.Item>
+                                    <ListGroup.Item><b>Driver's age fee:</b> {props.fees["ageFee"]}€</ListGroup.Item>
                                     }
                                     {props.fees["extraDriversFee"] !== "0" &&
-                                        <ListGroup.Item><b>Extra drivers fee:</b> {props.fees["extraDriversFee"]}€</ListGroup.Item>
+                                    <ListGroup.Item><b>Extra drivers
+                                        fee:</b> {props.fees["extraDriversFee"]}€</ListGroup.Item>
                                     }
                                     {props.fees["extraInsuranceFee"] !== "0" &&
-                                        <ListGroup.Item><b>Extra insurance fee:</b> {props.fees["extraInsuranceFee"]}€</ListGroup.Item>
+                                    <ListGroup.Item><b>Extra insurance
+                                        fee:</b> {props.fees["extraInsuranceFee"]}€</ListGroup.Item>
                                     }
-                                    <ListGroup.Item><b>Total price:</b> {props.price}€</ListGroup.Item>
+                                    {props.fees["fewVehiclesFee"] !== "0" &&
+                                    <ListGroup.Item><b>Few vehicles fee:</b> {props.fees["extraInsuranceFee"]}€</ListGroup.Item>
+                                    }
+                                    {props.fees["frequentCustomerFee"] !== "0" &&
+                                    <ListGroup.Item><b>Frequent customer discount:</b> {props.fees["extraInsuranceFee"]}€</ListGroup.Item>
+                                    }
+                                    <ListGroup.Item><b>Total price:</b> {props.totalPrice}€</ListGroup.Item>
                                 </ListGroup>
+                                }
                             </Row>
 
                             <Row className="justify-content-end mr-5 mt-2">

@@ -45,23 +45,66 @@ async function getReservations() {
     const response = await fetch(baseURL + url);
     const reservationsJson = await response.json();
     if(response.ok){
-        return reservationsJson.map((r) => new Reservation(r.id, r.startingDay, r.endingDay, r.carCategory, r.driverAge,
-            r.kmPerDay, r.extraDrivers, r.extraInsurance, r.price, r.user));
+        if (reservationsJson === {}) //probabilmente qua non andrà bene
+            return reservationsJson;
+        else
+            return reservationsJson.map((r) => new Reservation(r.id, r.startingDay, r.endingDay, r.carCategory, r.driverAge,
+                r.kmPerDay, r.extraDrivers, r.extraInsurance, r.price, r.user));
     } else {
         throw {status: response.status, errObj:reservationsJson};  // An object with the error coming from the server
     }
 }
 
-async function getAvailableCars() {
+async function getPriceData(reservation) {
+    let url = "/price";
+    const response = await fetch(baseURL + url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reservation),
+    });
+    const priceDataJson = await response.json();
+    if(response.ok) {
+        return priceDataJson;
+    }else {
+        throw {status: response.status, errObj:priceDataJson};  // An object with the error coming from the server
+    }
+}
+
+/*async function getAvailableCars(reservation) {
     let url = "/availableCars";
-    const response = await fetch(baseURL + url);
+    const response = await fetch(baseURL + url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(reservation),
+    });
     const availableCarsJson = await response.json();
     if(response.ok){
-        return availableCarsJson; //a number
+        return availableCarsJson["availableCars"]; // a string rappresenting a number
     } else {
         throw {status: response.status, errObj:availableCarsJson};  // An object with the error coming from the server
     }
-}
+}*/
+
+/*async function getNumberOfCarsForCategory(category) {
+    let url = "/carsForCategory";
+    const response = await fetch(baseURL + url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(category),
+    });
+    const numberOfCarsJson = await response.json();
+    if(response.ok){
+        return numberOfCarsJson["carForCategory"]; // a string rappresenting a number
+    } else {
+        throw {status: response.status, errObj:numberOfCarsJson};  // An object with the error coming from the server
+    }
+}*/
 
 async function addReservation(reservation) {
     return new Promise((resolve, reject) => {
@@ -141,5 +184,6 @@ async function userLogout(username, password) {
     });
 }
 
-const API = { isAuthenticated, getCars, getBrands, getReservations, getAvailableCars, addReservation,deleteReservation, userLogin, userLogout} ;
+const API = { isAuthenticated, getCars, getBrands, getReservations, getAvailableCars, getPriceData,
+    getNumberOfCarsForCategory, addReservation,deleteReservation, userLogin, userLogout} ;
 export default API;

@@ -2,7 +2,10 @@ class Reservation{
 
     constructor(id, startingDay, endingDay, carCategory, driverAge, kmPerDay, extraDrivers,
                 extraInsurance, price, user) {
-        this.id = id;
+        if(id){
+            this.id = id;
+        }
+
         this.startingDay = startingDay;
         this.endingDay = endingDay;
         this.carCategory = carCategory;

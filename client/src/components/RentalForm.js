@@ -76,7 +76,7 @@ const RentalForm = (props) => {
                                 >
                                     <option/>
                                     <option value={0}>Less than 50km</option>
-                                    <option value={1}>Less than 150km</option>
+                                    <option value={1}>50-150km</option>
                                     <option value={2}>Unlimited</option>
                                 </Form.Control>
                             </Form.Group>

@@ -5,6 +5,12 @@ const morgan = require('morgan'); // logging middleware
 const jwt = require('express-jwt');
 const jsonwebtoken = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const moment = require('moment');
+
+//i need them to associate the value of the configurator to the meaning
+const carCategoryArray = ["A","B","C","D","E"];
+const driverAgeArray = ["Under 25", "25-65 years old", "Over 65"];
+const kmPerDayArray = ["Less than 50km", "50-150km", "Unlimited"];
 
 //DAO
 const reservationDao = require('./dao/ReservationDao');
@@ -138,18 +144,137 @@ app.get('/api/reservations', (req, res) => {
         });
 });
 
-//GET /availableCars
-app.get('/api/availableCars', (req, res) => {
-    reservationDao.getAvailableCars()
-        .then((availableCars) => {
-            res.json(availableCars);
-        })
-        .catch((err) => {
-            res.status(500).json({
-                errors: [{'msg': err}],
+/*//POST /availableCars
+app.post('/api/availableCars', (req, res) => {
+    const reservation = req.body;
+    if(!reservation){
+        res.status(400).end();
+    } else {
+        carDao.getCarsForCategory(reservation.carCategory)
+            .then((carsForCategory) => {
+                reservationDao.getNonValidCars(reservation)
+                    .then((nonValidCars) => {
+                        res.json({"availableCars" : carsForCategory["COUNT(*)"] - nonValidCars["COUNT(*)"]});
+                    })
+                    .catch((err) => {
+                        res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
+                    })
+            })
+            .catch((err) => {
+                res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
             });
-        });
+    }
+});*/
+
+/*//POST /carsForCategory
+app.post('/api/carsForCategory', (req, res) => {
+    const category = req.body;
+    if(!category){
+        res.status(400).end();
+    } else {
+        carDao.getCarsForCategory(category)
+            .then((carsForCategory) => {
+                res.json({"carForCategory" : carsForCategory["COUNT(*)"]});
+            })
+            .catch((err) => {
+                res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
+            });
+    }
+});*/
+
+//POST /price
+app.post('/api/price', (req, res) => {
+    const reservation = req.body;
+    const reservationTranslated = {...reservation};
+    reservationTranslated.carCategory = carCategoryArray[parseInt(reservation.carCategory)];
+    console.log(reservation);
+    if(!reservation){
+        res.status(400).end();
+    } else {
+        carDao.getCarsForCategory(reservationTranslated.carCategory)
+            .then((carsForCategory) => {
+                reservationDao.getNonValidCars(reservationTranslated)
+                    .then((nonValidCars) => {
+                        const user = req.user && req.user.user;
+                        console.log(user);
+                        reservationDao.getReservations(user)
+                            .then((userReservations) => {
+                                console.log(carsForCategory);
+                                console.log(nonValidCars);
+                                console.log(userReservations);
+                                const data = calculatePrice(reservation, carsForCategory["COUNT(*)"], nonValidCars["COUNT(*)"], userReservations)
+                                console.log(data);
+                                res.json(data);
+                            })
+                            .catch((err) => {
+                                res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
+                            })
+                    })
+                    .catch((err) => {
+                        res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
+                    })
+            })
+            .catch((err) => {
+                res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
+            });
+    }
 });
+
+const calculatePrice = (reservation, carsForCategory, nonValidCars, userReservations) => {
+    const priceTable = {
+        category : [80, 70, 60, 50, 40],
+        km : [-5/100, -0, +5/100],
+        age : [+5/100, +0, +10/100],
+        extraDrivers : +15/100,
+        extraInsurance: +20/100,
+        less10Vehicles : +10/100,
+        frequentCustomer : -10/100
+    }
+    const duration = calculateDuration(reservation)
+    const basePrice = priceTable.category[parseInt(reservation.carCategory)] * duration;
+    console.log(basePrice);
+    const kmFee = basePrice * priceTable.km[parseInt(reservation.kilometersPerDay)];
+    const ageFee = basePrice * priceTable.age[parseInt(reservation.driverAge)];
+    const extraDriversFee = basePrice * (reservation.extraDrivers === "0" ? 0 : priceTable.extraDrivers);
+    const extraInsuranceFee = basePrice * (reservation.extraInsurance ? priceTable.extraInsurance : 0);
+    const fewVehiclesFee = basePrice * ((carsForCategory * nonValidCars / 100) === 90 ? priceTable.less10Vehicles : 0);
+    let frequentCustomerFee = 0;
+    if (userReservations.length !== 0){
+        const pastReservations = userReservations.filter((reservation) => {
+            const today = moment();
+            return moment(reservation.endingDay).isBefore(today);
+        })
+        if (pastReservations.length >= 3)
+            frequentCustomerFee = basePrice * priceTable.frequentCustomer;
+    }
+
+    const totalPrice = basePrice + kmFee + ageFee + extraDriversFee + extraInsuranceFee + fewVehiclesFee + frequentCustomerFee;
+
+    //will be used to show the detail of the totalPrice
+    //converted into strings because i'm using only strings data as a standard
+    return {
+        duration : duration,
+        numberOfAvailableCars: (carsForCategory - nonValidCars)+"",
+        totalPrice : totalPrice+"",
+        fees : {
+            basePrice: basePrice+"",
+            kmFee: kmFee+"",
+            ageFee: ageFee+"",
+            extraDriversFee: extraDriversFee+"",
+            extraInsuranceFee: extraInsuranceFee+"",
+            fewVehiclesFee : fewVehiclesFee+"",
+            frequentCustomerFee : frequentCustomerFee+""
+        }
+    }
+}
+
+const calculateDuration = (reservation) => {
+    const a = moment(reservation.startingDay);
+    const b = moment(reservation.endingDay);
+    //converted into strings because i'm using only strings data as a standard
+    //+1 because commonly we say 1 day rental even if we return it on the same day and so on...
+    return b.diff(a, 'days') + 1 + "";
+}
 
 //POST /reservations
 app.post('/api/reservations', (req,res) => {
