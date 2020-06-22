@@ -8,7 +8,6 @@ import SideBar from "./components/SideBar";
 import Row from "react-bootstrap/Row";
 import Showroom from "./components/Showroom";
 import {Switch} from 'react-router';
-import Car from "./entities/Car";
 import {Redirect, Route} from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
 import InteractiveConfiguration from "./components/InteractiveConfiguration";
@@ -124,6 +123,8 @@ class App extends Component {
             this.setState({filteredCars : [...this.state.allCars]}); //no active filter so i have to show all the cars
         }
         else {
+            //there's some active filter so i have to filter the cars, I could have simplified the if using only this part
+            //without any loss of performance but i keep it in this way for clarity
             const newFilteredCars = this.state.allCars.filter((car) => {
                 //if there are no categories or brands filters then every category or brand is ok
                 let categoryOk = activeCategories.length === 0;
