@@ -4,6 +4,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/Button";
+import PaymentForm from "./PaymentForm";
 
 const PriceDialog = (props) => {
     return (
@@ -49,7 +50,13 @@ const PriceDialog = (props) => {
                             </Row>
 
                             <Row className="justify-content-end mr-5 mt-2">
-                                <Button variant="warning" onClick={props.book()}>Go to payment</Button>
+                                <Button variant="warning" onClick={props.goToPayment}>Go to payment</Button>
+                                <PaymentForm
+                                    show={props.showPayment}
+                                    pay={props.pay}
+                                    cancelPayment={props.cancelPayment}
+                                    totalPrice={props.totalPrice}
+                                />
                             </Row>
                         </Col>
                     </Row>

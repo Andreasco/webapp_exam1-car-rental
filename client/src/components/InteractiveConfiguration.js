@@ -39,7 +39,9 @@ class InteractiveConfiguration extends Component {
             },
 
             //show the price dialog when the fields are filled
-            showPrice : false,
+            showPrice : true,
+            //show the payment modal when the user agree the price
+            showPayment : true,
 
             //data from the server
             numberOfAvailableCars : "", //tell the user how many cars are available
@@ -96,8 +98,16 @@ class InteractiveConfiguration extends Component {
         }
     }
 
-    book = () => {
-        //booking function
+    goToPayment = () => {
+        this.setState({showPayment : true});
+    }
+
+    pay = () => {
+        this.setState({showPayment : false});
+    }
+
+    cancelPayment = () => {
+        this.setState({showPayment : false});
     }
 
     render() {
@@ -118,7 +128,10 @@ class InteractiveConfiguration extends Component {
                                         duration={this.state.duration}
                                         totalPrice={this.state.totalPrice}
                                         fees={this.state.fees}
-                                        book={this.book}
+                                        goToPayment={this.goToPayment}
+                                        showPayment={this.state.showPayment}
+                                        pay={this.pay}
+                                        cancelPayment={this.cancelPayment}
                                     />
                                 }
                             </Col>

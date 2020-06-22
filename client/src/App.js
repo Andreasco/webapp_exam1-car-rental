@@ -74,7 +74,7 @@ class App extends Component {
             });
     }
 
-    handleErrors(err) {
+    handleErrors = (err) => {
         if (err) {
             if (err.status && err.status === 401) {
                 this.setState({authErr: err.errorObj});
