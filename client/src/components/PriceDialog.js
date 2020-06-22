@@ -49,7 +49,7 @@ const PriceDialog = (props) => {
                             </Row>
 
                             <Row className="justify-content-end mr-5 mt-2">
-                                <Button variant="warning" onClick={props.book()}>Book!</Button>
+                                <Button variant="warning" onClick={props.book()}>Go to payment</Button>
                             </Row>
                         </Col>
                     </Row>

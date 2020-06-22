@@ -184,6 +184,6 @@ async function userLogout(username, password) {
     });
 }
 
-const API = { isAuthenticated, getCars, getBrands, getReservations, getAvailableCars, getPriceData,
-    getNumberOfCarsForCategory, addReservation,deleteReservation, userLogin, userLogout} ;
+const API = { isAuthenticated, getCars, getBrands, getReservations, getPriceData,
+    addReservation,deleteReservation, userLogin, userLogout} ;
 export default API;
