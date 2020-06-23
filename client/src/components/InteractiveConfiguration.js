@@ -60,7 +60,7 @@ class InteractiveConfiguration extends Component {
         this.setState({
             [name] : value,
             filled : newBooleans
-        }, this.checkFields);
+        }, this.checkFilled);
     }
 
     createReservation = () => {
@@ -75,7 +75,7 @@ class InteractiveConfiguration extends Component {
         }
     }
 
-    checkFields = () => {
+    checkFilled = () => {
         if (this.state.filled.startingDay && this.state.filled.endingDay && this.state.filled.carCategory
             && this.state.filled.driverAge && this.state.filled.kilometersPerDay){
 
