@@ -202,9 +202,9 @@ app.post('/api/price', (req, res) => {
                                 console.log(carsForCategory);
                                 console.log(nonValidCars);
                                 console.log(userReservations);
-                                const data = calculatePrice(reservation, carsForCategory, nonValidCars, userReservations)
-                                console.log(data);
-                                res.json(data);
+                                const serverPriceData = calculatePrice(reservation, carsForCategory, nonValidCars, userReservations)
+                                console.log(serverPriceData);
+                                res.json(serverPriceData);
                             })
                             .catch((err) => {
                                 res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
@@ -278,6 +278,42 @@ const calculateDuration = (reservation) => {
 
 //POST /payment
 app.post('/bank/payment', (req, res) => {
+    // copy and past from price API, the simplest way to avoid a server-server call
+    // this calcutates the price as in price API and then check if the price of the request is correct for the reservation sent
+    const data = req.body;
+    const reservation = data["reservation"];
+    const reservationTranslated = {...reservation};
+    reservationTranslated.carCategory = carCategoryArray[parseInt(reservation.carCategory)];
+    if(!data){
+        res.status(400).end();
+    } else {
+        carDao.getCarsForCategory(reservationTranslated.carCategory)
+            .then((carsForCategory) => {
+                reservationDao.getNonValidCars(reservationTranslated)
+                    .then((nonValidCars) => {
+                        const user = req.user && req.user.user;
+                        console.log(user);
+                        reservationDao.getReservations(user)
+                            .then((userReservations) => {
+                                const serverPriceData = calculatePrice(reservation, carsForCategory, nonValidCars, userReservations)
+                                if (serverPriceData["totalPrice"] === reservation["price"])
+                                    res.status(200).end();
+                                else
+                                    res.status(400).end();
+                            })
+                            .catch((err) => {
+                                res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
+                            })
+                    })
+                    .catch((err) => {
+                        res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
+                    })
+            })
+            .catch((err) => {
+                res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
+            });
+    }
+
     res.send("You know everything's okay :)");
 });
 
