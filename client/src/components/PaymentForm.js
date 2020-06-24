@@ -19,6 +19,17 @@ class PaymentForm extends Component {
         this.setState({[name] : value})
     }
 
+    handleSubmit = (event) => {
+        event.preventDefault();
+        const form = event.currentTarget();
+        //TODO form validation
+        if (!form.checkValidity()) {
+            form.reportValidity();
+        } else {
+            this.props.pay(this.state);
+        }
+    }
+
     render() {
         return (
             <>
@@ -29,7 +40,7 @@ class PaymentForm extends Component {
                     <Modal.Body>
                         <h2>Total price to pay: {this.props.totalPrice}€</h2>
 
-                        <Form>
+                        <Form onSubmit={(event) => this.handleSubmit(event)}>
                             <Form.Group controlId="fullName">
                                 <Form.Label>Name</Form.Label>
                                 <Form.Control type="text"
@@ -54,6 +65,8 @@ class PaymentForm extends Component {
                             <Form.Group controlId="creditCard">
                                 <Form.Label>Credit card number</Form.Label>
                                 <Form.Control type="text"
+                                              maxLength={16}
+                                              minLength={16}
                                               placeholder="Enter your credit card number"
                                               name="creditCardNumber"
                                               value={this.state.creditCardNumber}
@@ -66,6 +79,8 @@ class PaymentForm extends Component {
 
                                 <Form.Label>CVV</Form.Label>
                                 <Form.Control type="text"
+                                              maxLength={3}
+                                              minLength={3}
                                               placeholder="Enter your credit card's CVV"
                                               name="cvv"
                                               value={this.state.cvv}
@@ -79,7 +94,7 @@ class PaymentForm extends Component {
                         <Button variant="secondary" onClick={this.props.cancelPayment}>
                             Cancel
                         </Button>
-                        <Button variant="primary" onClick={this.props.pay}>
+                        <Button variant="primary" type="submit">
                             Pay
                         </Button>
                     </Modal.Footer>

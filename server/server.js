@@ -202,7 +202,7 @@ app.post('/api/price', (req, res) => {
                                 console.log(carsForCategory);
                                 console.log(nonValidCars);
                                 console.log(userReservations);
-                                const data = calculatePrice(reservation, carsForCategory["COUNT(*)"], nonValidCars["COUNT(*)"], userReservations)
+                                const data = calculatePrice(reservation, carsForCategory, nonValidCars, userReservations)
                                 console.log(data);
                                 res.json(data);
                             })
@@ -275,6 +275,11 @@ const calculateDuration = (reservation) => {
     //+1 because commonly we say 1 day rental even if we return it on the same day and so on...
     return b.diff(a, 'days') + 1 + "";
 }
+
+//POST /payment
+app.post('/bank/payment', (req, res) => {
+    res.send("You know everything's okay :)");
+});
 
 //POST /reservations
 app.post('/api/reservations', (req,res) => {

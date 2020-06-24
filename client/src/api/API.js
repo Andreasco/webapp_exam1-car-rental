@@ -106,6 +106,24 @@ async function getPriceData(reservation) {
     }
 }*/
 
+async function verifyPayment(paymentData) {
+    const baseURL = "/bank";
+    const url = "/payment";
+    const response = await fetch(baseURL + url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(paymentData),
+    });
+    const responseData = await response.text();
+    if(response.ok) {
+        return responseData;
+    }else {
+        throw {status: response.status, errObj:response};  // An object with the error coming from the server
+    }
+}
+
 async function addReservation(reservation) {
     return new Promise((resolve, reject) => {
         fetch(baseURL + "/reservations", {
@@ -184,6 +202,6 @@ async function userLogout(username, password) {
     });
 }
 
-const API = { isAuthenticated, getCars, getBrands, getReservations, getPriceData,
+const API = { isAuthenticated, getCars, getBrands, getReservations, getPriceData, verifyPayment,
     addReservation,deleteReservation, userLogin, userLogout} ;
 export default API;

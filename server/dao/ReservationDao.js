@@ -23,7 +23,7 @@ exports.getReservations = function (user) {
 
 exports.createReservation = function(reservation) {
     return new Promise((resolve, reject) => {
-        const sql = 'INSERT INTO reservations(startingDay, endingDay, carCategory, driverAge, kmPerDay, extraDriver, extraInsurance, price, user) VALUES(?,?,?,?,?,?,?,?,?)';
+        const sql = 'INSERT INTO reservations(startingDay, endingDay, carCategory, driverAge, kmPerDay, extraDrivers, extraInsurance, price, user) VALUES(?,?,?,?,?,?,?,?,?)';
         db.run(sql, [reservation.startingDay, reservation.endingDay, reservation.carCategory, reservation.driverAge, reservation.kmPerDay, reservation.extraDriver, reservation.extraInsurance, reservation.price, reservation.user], function (err) {
             if(err){
                 console.log(err);
@@ -56,7 +56,7 @@ exports.getNonValidCars = function (reservation) {
             if (err)
                 reject(err);
             else if (row) {
-                resolve(row);
+                resolve(row["COUNT(*)"]);
             }
             else{
                 resolve(undefined);

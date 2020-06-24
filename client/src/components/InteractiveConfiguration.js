@@ -7,6 +7,8 @@ import moment from 'moment';
 import RentalForm from "./RentalForm";
 import PriceDialog from "./PriceDialog";
 import API from "../api/API";
+import ReservationAlertSuccess from "./ReservationAlertSuccess";
+import ReservationAlertFailure from "./ReservationAlertFailure";
 
 class InteractiveConfiguration extends Component {
     constructor(props) {
@@ -39,9 +41,12 @@ class InteractiveConfiguration extends Component {
             },
 
             //show the price dialog when the fields are filled
-            showPrice : true,
+            showPrice : false,
             //show the payment modal when the user agree the price
-            showPayment : true,
+            showPayment : false,
+            //show the result of the reservation
+            reservationSuccess : false,
+            reservationFailure : false,
 
             //data from the server
             numberOfAvailableCars : "", //tell the user how many cars are available
@@ -102,12 +107,44 @@ class InteractiveConfiguration extends Component {
         this.setState({showPayment : true});
     }
 
-    pay = () => {
+    pay = (paymentData) => {
+        /*API.verifyPayment(paymentData)
+            .then(() => { //i don't need the response
+                API.addReservation(this.createReservation())
+                    .then(() => {
+                        this.setState({reservationSuccess : true});
+                    })
+                    .catch(() => {
+                        this.setState({reservationFailure : true});
+                    })
+            })
+            .catch(() => {
+                this.setState({reservationFailure : true}); //i should never get here because the server responds with a string
+            });
+        this.setState({showPayment : false});*/
+
+        console.log(paymentData);
+
+        API.verifyPayment({})
+            .then(() => { //i don't need the response
+                this.setState({reservationSuccess : true});
+            })
+            .catch(() => {
+                this.setState({reservationFailure : true});
+            });
         this.setState({showPayment : false});
     }
 
     cancelPayment = () => {
         this.setState({showPayment : false});
+    }
+
+    closeAlert = () => {
+        console.log("CLOSE ALERT");
+        this.setState({
+            reservationSuccess : false,
+            reservationFailure : false,
+        });
     }
 
     render() {
@@ -116,6 +153,8 @@ class InteractiveConfiguration extends Component {
                 {(context) => (
                     <>
                         {(!context.authUser || context.authErr) && <Redirect to = "/login" />}
+                        <ReservationAlertSuccess show={this.state.reservationSuccess} closeAlert={this.closeAlert}/>
+                        <ReservationAlertFailure show={this.state.reservationFailure} closeAlert={this.closeAlert}/>
                         <Row>
                             <Col sm={6}>
                                 <RentalForm state={this.state} onChange={this.updateField}/>

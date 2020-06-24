@@ -41,7 +41,7 @@ exports.getCarsForCategory = function (category) {
             if (err)
                 reject(err);
             else if (row) {
-                resolve(row);
+                resolve(row["COUNT(*)"]);
             }
             else{
                 resolve(undefined);
