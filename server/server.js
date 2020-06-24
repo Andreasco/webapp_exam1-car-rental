@@ -281,6 +281,7 @@ app.post('/bank/payment', (req, res) => {
     // copy and past from price API, the simplest way to avoid a server-server call
     // this calcutates the price as in price API and then check if the price of the request is correct for the reservation sent
     const data = req.body;
+    const paymentData = data["paymentData"];
     const reservation = data["reservation"];
     const reservationTranslated = {...reservation};
     reservationTranslated.carCategory = carCategoryArray[parseInt(reservation.carCategory)];
@@ -296,7 +297,7 @@ app.post('/bank/payment', (req, res) => {
                         reservationDao.getReservations(user)
                             .then((userReservations) => {
                                 const serverPriceData = calculatePrice(reservation, carsForCategory, nonValidCars, userReservations)
-                                if (serverPriceData["totalPrice"] === reservation["price"])
+                                if (checkPaymentData(paymentData, reservation, serverPriceData))
                                     res.status(200).end();
                                 else
                                     res.status(400).json({errors: [{'param': 'Client', 'msg': "Price doesn't match"}],})
@@ -313,9 +314,14 @@ app.post('/bank/payment', (req, res) => {
                 res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
             });
     }
-
-    res.send("You know everything's okay :)");
 });
+
+const checkPaymentData = (paymentData ,reservation, serverPriceData) => {
+    const priceOk = serverPriceData["totalPrice"] === reservation["price"];
+    const creditCardOk = paymentData["creditCardNumber"].length === 16;
+    const cvvOk = paymentData["cvv"].length === 3;
+    return priceOk && creditCardOk && cvvOk;
+}
 
 //POST /reservations
 app.post('/api/reservations', (req,res) => {
