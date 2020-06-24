@@ -299,7 +299,7 @@ app.post('/bank/payment', (req, res) => {
                                 if (serverPriceData["totalPrice"] === reservation["price"])
                                     res.status(200).end();
                                 else
-                                    res.status(400).end();
+                                    res.status(400).json({errors: [{'param': 'Client', 'msg': "Price doesn't match"}],})
                             })
                             .catch((err) => {
                                 res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
