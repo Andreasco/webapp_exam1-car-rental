@@ -300,7 +300,7 @@ app.post('/bank/payment', (req, res) => {
                                 if (checkPaymentData(paymentData, reservation, serverPriceData))
                                     res.status(200).end();
                                 else
-                                    res.status(400).json({errors: [{'param': 'Client', 'msg': "Price doesn't match"}],})
+                                    res.status(400).json({errors: [{'param': 'Client', 'msg': "There are errors in payment data"}],})
                             })
                             .catch((err) => {
                                 res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
