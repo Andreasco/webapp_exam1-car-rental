@@ -230,11 +230,12 @@ const calculatePrice = (reservation, carsForCategory, nonValidCars, userReservat
     const ageFee = basePrice * priceTable.age[parseInt(reservation.driverAge)];
     const extraDriversFee = basePrice * (reservation.extraDrivers === "0" ? 0 : priceTable.extraDrivers);
     const extraInsuranceFee = basePrice * (reservation.extraInsurance ? priceTable.extraInsurance : 0);
-    const fewVehiclesFee = basePrice * ((carsForCategory * nonValidCars / 100) === 90 ? priceTable.less10Vehicles : 0);
+    const availableCars = carsForCategory - nonValidCars;
+    const fewVehiclesFee = basePrice * ((100 * availableCars / carsForCategory) <= 10 ? priceTable.less10Vehicles : 0);
     let frequentCustomerFee = 0;
     if (userReservations.length !== 0){
         const pastReservations = userReservations.filter((reservation) => {
-            const today = moment();
+            const today = moment().format("YYYY-MM-DD");
             return moment(reservation.endingDay).isBefore(today);
         })
         if (pastReservations.length >= 3)
@@ -329,13 +330,37 @@ app.post('/api/reservations', (req,res) => {
         reservationTranslated.driverAge = driverAgeArray[parseInt(reservation.driverAge)];
         reservationTranslated.kmPerDay = kmPerDayArray[parseInt(reservation.kmPerDay)];
         reservationTranslated.user = user;
-        reservationDao.createReservation(reservationTranslated)
-            .then((id) => res.status(201).json({"id" : id}))
-            .catch((err) => {
-                res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
-            });
+        if (checkReservationData(reservationTranslated))
+            reservationDao.createReservation(reservationTranslated)
+                .then((id) => res.status(201).json({"id" : id}))
+                .catch((err) => {
+                    res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
+                });
     }
 });
+
+const checkReservationData = (reservation) => {
+    let datesOk = false;
+    let carCategoryOk = false;
+    let driversAgeOk = false;
+    let kmPerDayOk = false;
+    let extraDriversOk = false;
+
+    const carCategories = ["A","B","C","D","E"];
+    const driversAges = ["Under 25", "25-65 years old", "Over 65"];
+    const kmPerDays = ["Less than 50km", "50-100km", "Unlimited"];
+
+    const startingDay = moment(reservation.startingDay);
+    const endingDay = moment(reservation.endingDay);
+    datesOk = endingDay.isAfter(startingDay);
+
+    carCategoryOk = carCategories.includes(reservation.carCategory);
+    driversAgeOk = driversAges.includes(reservation.driverAge);
+    kmPerDayOk = kmPerDays.includes(reservation.kmPerDay);
+    extraDriversOk = reservation.extraDrivers >= 0;
+
+    return datesOk && carCategoryOk && driversAgeOk && kmPerDayOk && extraDriversOk;
+}
 
 //DELETE /reservations/<reservationId>
 app.delete('/api/reservations/:reservationId', (req,res) => {
