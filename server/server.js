@@ -187,7 +187,6 @@ app.post('/api/price', (req, res) => {
     const reservation = req.body;
     const reservationTranslated = {...reservation};
     reservationTranslated.carCategory = carCategoryArray[parseInt(reservation.carCategory)];
-    console.log(reservation);
     if(!reservation){
         res.status(400).end();
     } else {
@@ -196,14 +195,9 @@ app.post('/api/price', (req, res) => {
                 reservationDao.getNonValidCars(reservationTranslated)
                     .then((nonValidCars) => {
                         const user = req.user && req.user.user;
-                        console.log(user);
                         reservationDao.getReservations(user)
                             .then((userReservations) => {
-                                console.log(carsForCategory);
-                                console.log(nonValidCars);
-                                console.log(userReservations);
                                 const serverPriceData = calculatePrice(reservation, carsForCategory, nonValidCars, userReservations)
-                                console.log(serverPriceData);
                                 res.json(serverPriceData);
                             })
                             .catch((err) => {
@@ -232,8 +226,7 @@ const calculatePrice = (reservation, carsForCategory, nonValidCars, userReservat
     }
     const duration = calculateDuration(reservation)
     const basePrice = priceTable.category[parseInt(reservation.carCategory)] * duration;
-    console.log(basePrice);
-    const kmFee = basePrice * priceTable.km[parseInt(reservation.kilometersPerDay)];
+    const kmFee = basePrice * priceTable.km[parseInt(reservation.kmPerDay)];
     const ageFee = basePrice * priceTable.age[parseInt(reservation.driverAge)];
     const extraDriversFee = basePrice * (reservation.extraDrivers === "0" ? 0 : priceTable.extraDrivers);
     const extraInsuranceFee = basePrice * (reservation.extraInsurance ? priceTable.extraInsurance : 0);
@@ -293,7 +286,7 @@ app.post('/bank/payment', (req, res) => {
                 reservationDao.getNonValidCars(reservationTranslated)
                     .then((nonValidCars) => {
                         const user = req.user && req.user.user;
-                        console.log(user);
+                        console.log(`User: ${user}`);
                         reservationDao.getReservations(user)
                             .then((userReservations) => {
                                 const serverPriceData = calculatePrice(reservation, carsForCategory, nonValidCars, userReservations)
@@ -330,8 +323,13 @@ app.post('/api/reservations', (req,res) => {
         res.status(400).end();
     } else {
         const user = req.user && req.user.user;
-        reservation.user = user;
-        reservationDao.createReservation(reservation)
+        // I need to "translate" the reservation because some fields are numbers and i need the string meaning
+        const reservationTranslated = {...reservation};
+        reservationTranslated.carCategory = carCategoryArray[parseInt(reservation.carCategory)];
+        reservationTranslated.driverAge = driverAgeArray[parseInt(reservation.driverAge)];
+        reservationTranslated.kmPerDay = kmPerDayArray[parseInt(reservation.kmPerDay)];
+        reservationTranslated.user = user;
+        reservationDao.createReservation(reservationTranslated)
             .then((id) => res.status(201).json({"id" : id}))
             .catch((err) => {
                 res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})

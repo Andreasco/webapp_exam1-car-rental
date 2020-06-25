@@ -50,7 +50,7 @@ const PriceDialog = (props) => {
                             </Row>
 
                             <Row className="justify-content-end mr-5 mt-2">
-                                <Button variant="warning" onClick={props.goToPayment}>Go to payment</Button>
+                                <Button disabled={props.numberOfCarsAvailable === "0"} variant="warning" onClick={props.goToPayment}>Go to payment</Button>
                                 <PaymentForm
                                     show={props.showPayment}
                                     pay={props.pay}

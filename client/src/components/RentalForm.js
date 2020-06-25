@@ -2,6 +2,7 @@ import React from 'react';
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import Col from "react-bootstrap/Col";
+import moment from "moment";
 
 const RentalForm = (props) => {
 
@@ -17,7 +18,7 @@ const RentalForm = (props) => {
                                 <Form.Control type="date"
                                               name="startingDay"
                                               value={props.state.startingDay}
-                                              min={props.state.today}
+                                              min={moment().format("YYYY-MM-DD")}
                                               max={props.state.endingDay}
                                               onChange={(ev) => props.onChange(ev.target.name, ev.target.value)}
                                 />
@@ -67,11 +68,11 @@ const RentalForm = (props) => {
                         </Form.Row>
 
                         <Form.Row>
-                            <Form.Group as={Col} controlId="kilometersPerDay">
+                            <Form.Group as={Col} controlId="kmPerDay">
                                 <Form.Label>Estimated kilometers per day</Form.Label>
                                 <Form.Control as="select"
-                                              name="kilometersPerDay"
-                                              value={props.state.kilometersPerDay}
+                                              name="kmPerDay"
+                                              value={props.state.kmPerDay}
                                               onChange={(ev) => props.onChange(ev.target.name, ev.target.value)}
                                 >
                                     <option/>

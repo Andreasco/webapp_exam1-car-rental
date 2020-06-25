@@ -24,13 +24,13 @@ exports.getReservations = function (user) {
 exports.createReservation = function(reservation) {
     return new Promise((resolve, reject) => {
         const sql = 'INSERT INTO reservations(startingDay, endingDay, carCategory, driverAge, kmPerDay, extraDrivers, extraInsurance, price, user) VALUES(?,?,?,?,?,?,?,?,?)';
-        db.run(sql, [reservation.startingDay, reservation.endingDay, reservation.carCategory, reservation.driverAge, reservation.kmPerDay, reservation.extraDriver, reservation.extraInsurance, reservation.price, reservation.user], function (err) {
+        db.run(sql, [reservation.startingDay, reservation.endingDay, reservation.carCategory, reservation.driverAge, reservation.kmPerDay, reservation.extraDrivers, reservation.extraInsurance, reservation.price, reservation.user], function (err) {
             if(err){
                 console.log(err);
                 reject(err);
             }
             else{
-                console.log(this.lastID);
+                console.log(`New reservation id: ${this.lastID}`);
                 resolve(this.lastID);
             }
         });
@@ -51,8 +51,8 @@ exports.deleteReservation = function(id) {
 
 exports.getNonValidCars = function (reservation) {
     return new Promise((resolve, reject) => {
-        const sql = "SELECT COUNT(*) FROM reservations as r WHERE r.carCategory = ? AND r.startingDay < ? OR r.endingDay > ?"
-        db.get(sql, [reservation.carCategory, reservation.endingDay, reservation.startingDay], (err, row) => {
+        const sql = "SELECT COUNT(*) FROM reservations as r WHERE r.carCategory = ? AND (r.startingDay >= ? AND r.startingDay <= ?) OR (r.endingDay >= ? AND r.endingDay <= ?)"
+        db.get(sql, [reservation.carCategory, reservation.startingDay, reservation.endingDay, reservation.startingDay, reservation.endingDay], (err, row) => {
             if (err)
                 reject(err);
             else if (row) {

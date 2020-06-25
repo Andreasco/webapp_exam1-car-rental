@@ -3,7 +3,6 @@ import {Redirect} from 'react-router-dom';
 import {AuthContext} from '../auth/AuthContext'
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import moment from 'moment';
 import RentalForm from "./RentalForm";
 import PriceDialog from "./PriceDialog";
 import API from "../api/API";
@@ -15,21 +14,16 @@ class InteractiveConfiguration extends Component {
         super(props);
 
         this.state = {
-            //i need them to associate the value of the configurator to the meaning
-            carCategoryArray : ["A","B","C","D","E"],
-            driverAgeArray : ["Under 25", "25-65 years old", "Over 65"],
-            kmPerDayArray : ["Less than 50km", "50-150km", "Unlimited"],
-
-            today : moment().format("YYYY-MM-DD"),
-
             //input fields
-            startingDay: "",
-            endingDay : "",
-            carCategory : "",
-            driverAge : "",
-            kilometersPerDay : "",
-            extraDrivers : "0",
-            extraInsurance : false,
+            rentalForm : {
+                startingDay: "",
+                endingDay: "",
+                carCategory: "",
+                driverAge: "",
+                kmPerDay: "",
+                extraDrivers: "0",
+                extraInsurance: false,
+            },
 
             //check if a field is filled
             filled : {
@@ -37,7 +31,7 @@ class InteractiveConfiguration extends Component {
                 endingDay : false,
                 carCategory : false,
                 driverAge : false,
-                kilometersPerDay : false
+                kmPerDay : false
             },
 
             //show the price dialog when the fields are filled
@@ -62,29 +56,20 @@ class InteractiveConfiguration extends Component {
         const newBooleans = {...this.state.filled};
         newBooleans[name] = value !== "";
 
+        const newRentalForm = {...this.state.rentalForm};
+        newRentalForm[name] = value;
+
         this.setState({
-            [name] : value,
+            rentalForm : newRentalForm,
             filled : newBooleans
         }, this.checkFilled);
     }
 
-    createReservation = () => {
-        return  {
-            startingDay: this.state.startingDay,
-            endingDay : this.state.endingDay,
-            carCategory : this.state.carCategory,
-            driverAge : this.state.driverAge,
-            kilometersPerDay : this.state.kilometersPerDay,
-            extraDrivers : this.state.extraDrivers,
-            extraInsurance : this.state.extraInsurance,
-        }
-    }
-
     checkFilled = () => {
         if (this.state.filled.startingDay && this.state.filled.endingDay && this.state.filled.carCategory
-            && this.state.filled.driverAge && this.state.filled.kilometersPerDay){
+            && this.state.filled.driverAge && this.state.filled.kmPerDay){
 
-            API.getPriceData(this.createReservation())
+            API.getPriceData({...this.state.rentalForm})
                 .then((priceData) => {
                     this.setState({
                         duration : priceData["duration"],
@@ -108,9 +93,17 @@ class InteractiveConfiguration extends Component {
     }
 
     pay = (paymentData) => {
-        /*API.verifyPayment(paymentData)
-            .then(() => { //i don't need the response
-                API.addReservation(this.createReservation())
+        const reservationWithPrice = {...this.state.rentalForm};
+        reservationWithPrice.price = this.state.totalPrice;
+
+        const data = {
+            paymentData : paymentData,
+            reservation : reservationWithPrice
+        };
+
+        API.verifyPayment(data)
+            .then(() => { //the response should always be ok
+                API.addReservation(reservationWithPrice)
                     .then(() => {
                         this.setState({reservationSuccess : true});
                     })
@@ -119,20 +112,26 @@ class InteractiveConfiguration extends Component {
                     })
             })
             .catch(() => {
-                this.setState({reservationFailure : true}); //i should never get here because the server responds with a string
+                this.setState({reservationFailure : true}); //i should never get here because
             });
-        this.setState({showPayment : false});*/
+        this.setState({showPayment : false});
 
-        console.log(paymentData);
+        /*const reservationWithPrice = this.createReservation();
+        reservationWithPrice.price = this.state.totalPrice;
 
-        API.verifyPayment({})
+        const data = {
+            paymentData : paymentData,
+            reservation : reservationWithPrice
+        };
+
+        API.verifyPayment(data)
             .then(() => { //i don't need the response
                 this.setState({reservationSuccess : true});
             })
             .catch(() => {
                 this.setState({reservationFailure : true});
             });
-        this.setState({showPayment : false});
+        this.setState({showPayment : false});*/
     }
 
     cancelPayment = () => {
@@ -140,7 +139,6 @@ class InteractiveConfiguration extends Component {
     }
 
     closeAlert = () => {
-        console.log("CLOSE ALERT");
         this.setState({
             reservationSuccess : false,
             reservationFailure : false,
@@ -157,7 +155,7 @@ class InteractiveConfiguration extends Component {
                         <ReservationAlertFailure show={this.state.reservationFailure} closeAlert={this.closeAlert}/>
                         <Row>
                             <Col sm={6}>
-                                <RentalForm state={this.state} onChange={this.updateField}/>
+                                <RentalForm state={this.state.rentalForm} onChange={this.updateField}/>
                             </Col>
 
                             <Col sm={6}>
