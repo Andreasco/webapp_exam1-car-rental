@@ -7,67 +7,43 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Table from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
-
-async function getReservations() { //fake loading, as it was an API call
-    return new Promise( resolve => {
-        const reservations = [
-            {
-                id : 0,
-                startingDay : "2020-06-12",
-                endingDay : "2020-06-14",
-                carCategory : "A",
-                driverAge : "Under 25",
-                kmPerDay : "Less than 150",
-                extraDrivers : "3",
-                extraInsurance : true,
-                price : 100
-            },
-            {
-                id : 1,
-                startingDay : "2020-06-12",
-                endingDay : "2020-06-14",
-                carCategory : "A",
-                driverAge : "Under 25",
-                kmPerDay : "Less than 150",
-                extraDrivers : "3",
-                extraInsurance : true,
-                price : 240
-            },
-            {
-                id : 2,
-                startingDay : "2020-06-12",
-                endingDay : "2020-06-14",
-                carCategory : "A",
-                driverAge : "Under 25",
-                kmPerDay : "Less than 150",
-                extraDrivers : "3",
-                extraInsurance : true,
-                price : 300
-            }];
-        resolve(reservations);
-    })
-}
+import API from "../api/API";
+import moment from "moment";
 
 class UserDashboard extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            reservations : [],
+            pastReservations : [],
+            futureReservations : [],
             activeRows : {},
-            selectedReservations : []
+            selectedReservationsIds : []
         }
     }
 
     componentDidMount() {
-        getReservations().then((reservations) => {
+        this.init();
+    }
+
+    init = () => {
+        API.getReservations().then((reservations) => {
+            const pastReservations = [];
+            const futureReservations = [];
             const activeRows = {};
             reservations.forEach((reservation, index) => {
-                activeRows[index] = false;
+                const today = moment().format("YYYY-MM-DD");
+                if (moment(reservation.endingDay).isBefore(today))
+                    pastReservations.push(reservation);
+                else {
+                    futureReservations.push(reservation);
+                    activeRows[index] = false;
+                }
             });
 
             this.setState({
-                reservations : reservations,
+                pastReservations : pastReservations,
+                futureReservations : futureReservations,
                 activeRows : activeRows
             })
         });
@@ -76,7 +52,7 @@ class UserDashboard extends Component {
     createBodyFuture = (reservation, rowIndex) => {
         return (
             <tr key={rowIndex} className={this.state.activeRows[rowIndex] ? "active" : null}
-                onClick={() => this.changeActive(rowIndex)}>
+                onClick={() => this.selectReservation(rowIndex)}>
                 <td>{reservation.startingDay}</td>
                 <td>{reservation.endingDay}</td>
                 <td>{reservation.carCategory}</td>
@@ -104,22 +80,25 @@ class UserDashboard extends Component {
         )
     }
 
-    changeActive = (rowIndex) => {
+    selectReservation = (rowIndex) => {
         const newActiveRows = {...this.state.activeRows};
-        const newSelectedReservations = [...this.state.selectedReservations];
+        const newSelectedReservationsIds = [...this.state.selectedReservationsIds];
         newActiveRows[rowIndex] = !newActiveRows[rowIndex];
         if (newActiveRows[rowIndex])
-            newSelectedReservations.push(rowIndex);
+            newSelectedReservationsIds.push(this.state.futureReservations[rowIndex].id);
         else
-            newSelectedReservations.splice(newSelectedReservations.indexOf(rowIndex),1);
+            newSelectedReservationsIds.splice(newSelectedReservationsIds.indexOf(rowIndex),1);
         this.setState({
             activeRows : newActiveRows,
-            selectedReservations : newSelectedReservations
+            selectedReservationsIds : newSelectedReservationsIds
         });
     }
 
     deleteReservations = () => {
-        //TODO chiamata API per eliminare quelle prenotazioni
+        for (const reservationId of this.state.selectedReservationsIds)
+            API.deleteReservation(reservationId).then(() => {
+                this.init();
+            });
     }
 
     render() {
@@ -156,7 +135,7 @@ class UserDashboard extends Component {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {this.state.reservations.map((r, i) => this.createBodyPast(r, i))}
+                                    {this.state.pastReservations.map((r, i) => this.createBodyPast(r, i))}
                                     </tbody>
                                 </Table>
 
@@ -175,11 +154,13 @@ class UserDashboard extends Component {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {this.state.reservations.map((r, i) => this.createBodyFuture(r, i))}
+                                    {this.state.futureReservations.map((r, i) => this.createBodyFuture(r, i))}
                                     </tbody>
                                 </Table>
 
-                                <Button className="mb-5" variant="warning" onClick={this.deleteReservations}>Delete selected</Button>
+                                <Button className="mb-5" variant="warning"
+                                        disabled={this.state.selectedReservationsIds.length === 0}
+                                        onClick={this.deleteReservations}>Delete selected</Button>
                             </Col>
                         </Row>
                     </>
