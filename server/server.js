@@ -5,12 +5,10 @@ const morgan = require('morgan'); // logging middleware
 const jwt = require('express-jwt');
 const jsonwebtoken = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
-const moment = require('moment');
 
-//i need them to associate the value of the configurator to the meaning
-const carCategoryArray = ["A","B","C","D","E"];
-const driverAgeArray = ["Under 25", "25-65 years old", "Over 65"];
-const kmPerDayArray = ["Less than 50km", "50-150km", "Unlimited"];
+// Custom files
+const utility = require('./utility');
+const translationArrays = require('./translationArrays');
 
 //DAO
 const reservationDao = require('./dao/ReservationDao');
@@ -109,7 +107,7 @@ app.use(
 );
 
 // To return a better object in case of errors
-app.use(function (err, req, res, next) {
+app.use(function (err, req, res) {
     if (err.name === 'UnauthorizedError') {
         res.status(401).json(authErrorObj);
     }
@@ -144,49 +142,11 @@ app.get('/api/reservations', (req, res) => {
         });
 });
 
-/*//POST /availableCars
-app.post('/api/availableCars', (req, res) => {
-    const reservation = req.body;
-    if(!reservation){
-        res.status(400).end();
-    } else {
-        carDao.getCarsForCategory(reservation.carCategory)
-            .then((carsForCategory) => {
-                reservationDao.getNonValidCars(reservation)
-                    .then((nonValidCars) => {
-                        res.json({"availableCars" : carsForCategory["COUNT(*)"] - nonValidCars["COUNT(*)"]});
-                    })
-                    .catch((err) => {
-                        res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
-                    })
-            })
-            .catch((err) => {
-                res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
-            });
-    }
-});*/
-
-/*//POST /carsForCategory
-app.post('/api/carsForCategory', (req, res) => {
-    const category = req.body;
-    if(!category){
-        res.status(400).end();
-    } else {
-        carDao.getCarsForCategory(category)
-            .then((carsForCategory) => {
-                res.json({"carForCategory" : carsForCategory["COUNT(*)"]});
-            })
-            .catch((err) => {
-                res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
-            });
-    }
-});*/
-
 //POST /price
 app.post('/api/price', (req, res) => {
     const reservation = req.body;
     const reservationTranslated = {...reservation};
-    reservationTranslated.carCategory = carCategoryArray[parseInt(reservation.carCategory)];
+    reservationTranslated.carCategory = translationArrays.carCategoryArray[parseInt(reservation.carCategory)];
     if(!reservation){
         res.status(400).end();
     } else {
@@ -197,7 +157,7 @@ app.post('/api/price', (req, res) => {
                         const user = req.user && req.user.user;
                         reservationDao.getReservations(user)
                             .then((userReservations) => {
-                                const serverPriceData = calculatePrice(reservation, carsForCategory, nonValidCars, userReservations)
+                                const serverPriceData = utility.calculatePrice(reservation, carsForCategory, nonValidCars, userReservations)
                                 res.json(serverPriceData);
                             })
                             .catch((err) => {
@@ -214,62 +174,6 @@ app.post('/api/price', (req, res) => {
     }
 });
 
-const calculatePrice = (reservation, carsForCategory, nonValidCars, userReservations) => {
-    const priceTable = {
-        category : [80, 70, 60, 50, 40],
-        km : [-5/100, -0, +5/100],
-        age : [+5/100, +0, +10/100],
-        extraDrivers : +15/100,
-        extraInsurance: +20/100,
-        less10Vehicles : +10/100,
-        frequentCustomer : -10/100
-    }
-    const duration = calculateDuration(reservation)
-    const basePrice = priceTable.category[parseInt(reservation.carCategory)] * duration;
-    const kmFee = basePrice * priceTable.km[parseInt(reservation.kmPerDay)];
-    const ageFee = basePrice * priceTable.age[parseInt(reservation.driverAge)];
-    const extraDriversFee = basePrice * (reservation.extraDrivers === "0" ? 0 : priceTable.extraDrivers);
-    const extraInsuranceFee = basePrice * (reservation.extraInsurance ? priceTable.extraInsurance : 0);
-    const availableCars = carsForCategory - nonValidCars;
-    const fewVehiclesFee = basePrice * ((100 * availableCars / carsForCategory) <= 10 ? priceTable.less10Vehicles : 0);
-    let frequentCustomerFee = 0;
-    if (userReservations.length !== 0){
-        const pastReservations = userReservations.filter((reservation) => {
-            const today = moment().format("YYYY-MM-DD");
-            return moment(reservation.endingDay).isBefore(today);
-        })
-        if (pastReservations.length >= 3)
-            frequentCustomerFee = basePrice * priceTable.frequentCustomer;
-    }
-
-    const totalPrice = basePrice + kmFee + ageFee + extraDriversFee + extraInsuranceFee + fewVehiclesFee + frequentCustomerFee;
-
-    //will be used to show the detail of the totalPrice
-    //converted into strings because i'm using only strings data as a standard
-    return {
-        duration : duration,
-        numberOfAvailableCars: (carsForCategory - nonValidCars)+"",
-        totalPrice : totalPrice+"",
-        fees : {
-            basePrice: basePrice+"",
-            kmFee: kmFee+"",
-            ageFee: ageFee+"",
-            extraDriversFee: extraDriversFee+"",
-            extraInsuranceFee: extraInsuranceFee+"",
-            fewVehiclesFee : fewVehiclesFee+"",
-            frequentCustomerFee : frequentCustomerFee+""
-        }
-    }
-}
-
-const calculateDuration = (reservation) => {
-    const a = moment(reservation.startingDay);
-    const b = moment(reservation.endingDay);
-    //converted into strings because i'm using only strings data as a standard
-    //+1 because commonly we say 1 day rental even if we return it on the same day and so on...
-    return b.diff(a, 'days') + 1 + "";
-}
-
 //POST /payment
 app.post('/bank/payment', (req, res) => {
     // copy and past from price API, the simplest way to avoid a server-server call
@@ -278,7 +182,7 @@ app.post('/bank/payment', (req, res) => {
     const paymentData = data["paymentData"];
     const reservation = data["reservation"];
     const reservationTranslated = {...reservation};
-    reservationTranslated.carCategory = carCategoryArray[parseInt(reservation.carCategory)];
+    reservationTranslated.carCategory = translationArrays.carCategoryArray[parseInt(reservation.carCategory)];
     if(!data){
         res.status(400).end();
     } else {
@@ -290,8 +194,8 @@ app.post('/bank/payment', (req, res) => {
                         console.log(`User: ${user}`);
                         reservationDao.getReservations(user)
                             .then((userReservations) => {
-                                const serverPriceData = calculatePrice(reservation, carsForCategory, nonValidCars, userReservations)
-                                if (checkPaymentData(paymentData, reservation, serverPriceData))
+                                const serverPriceData = utility.calculatePrice(reservation, carsForCategory, nonValidCars, userReservations)
+                                if (utility.checkPaymentData(paymentData, reservation, serverPriceData))
                                     res.status(200).end();
                                 else
                                     res.status(400).json({errors: [{'param': 'Client', 'msg': "There are errors in payment data"}],})
@@ -310,13 +214,6 @@ app.post('/bank/payment', (req, res) => {
     }
 });
 
-const checkPaymentData = (paymentData ,reservation, serverPriceData) => {
-    const priceOk = serverPriceData["totalPrice"] === reservation["price"];
-    const creditCardOk = paymentData["creditCardNumber"].length === 16;
-    const cvvOk = paymentData["cvv"].length === 3;
-    return priceOk && creditCardOk && cvvOk;
-}
-
 //POST /reservations
 app.post('/api/reservations', (req,res) => {
     const reservation = req.body;
@@ -324,13 +221,15 @@ app.post('/api/reservations', (req,res) => {
         res.status(400).end();
     } else {
         const user = req.user && req.user.user;
+
         // I need to "translate" the reservation because some fields are numbers and i need the string meaning
         const reservationTranslated = {...reservation};
-        reservationTranslated.carCategory = carCategoryArray[parseInt(reservation.carCategory)];
-        reservationTranslated.driverAge = driverAgeArray[parseInt(reservation.driverAge)];
-        reservationTranslated.kmPerDay = kmPerDayArray[parseInt(reservation.kmPerDay)];
+        reservationTranslated.carCategory = translationArrays.carCategoryArray[parseInt(reservation.carCategory)];
+        reservationTranslated.driverAge = translationArrays.driverAgeArray[parseInt(reservation.driverAge)];
+        reservationTranslated.kmPerDay = translationArrays.kmPerDayArray[parseInt(reservation.kmPerDay)];
+
         reservationTranslated.user = user;
-        if (checkReservationData(reservationTranslated))
+        if (utility.checkReservationData(reservationTranslated))
             reservationDao.createReservation(reservationTranslated)
                 .then((id) => res.status(201).json({"id" : id}))
                 .catch((err) => {
@@ -338,29 +237,6 @@ app.post('/api/reservations', (req,res) => {
                 });
     }
 });
-
-const checkReservationData = (reservation) => {
-    let datesOk = false;
-    let carCategoryOk = false;
-    let driversAgeOk = false;
-    let kmPerDayOk = false;
-    let extraDriversOk = false;
-
-    const carCategories = ["A","B","C","D","E"];
-    const driversAges = ["Under 25", "25-65 years old", "Over 65"];
-    const kmPerDays = ["Less than 50km", "50-100km", "Unlimited"];
-
-    const startingDay = moment(reservation.startingDay);
-    const endingDay = moment(reservation.endingDay);
-    datesOk = endingDay.isAfter(startingDay);
-
-    carCategoryOk = carCategories.includes(reservation.carCategory);
-    driversAgeOk = driversAges.includes(reservation.driverAge);
-    kmPerDayOk = kmPerDays.includes(reservation.kmPerDay);
-    extraDriversOk = reservation.extraDrivers >= 0;
-
-    return datesOk && carCategoryOk && driversAgeOk && kmPerDayOk && extraDriversOk;
-}
 
 //DELETE /reservations/<reservationId>
 app.delete('/api/reservations/:reservationId', (req,res) => {
