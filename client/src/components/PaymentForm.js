@@ -31,12 +31,15 @@ class PaymentForm extends Component {
         // simple form validation
         event.preventDefault();
         const form = event.currentTarget;
+
         let creditCardNumberError = false;
         let cvvError = false;
-        if (form.creditCardNumber.value.length !== 16)
-            creditCardNumberError = true;
-        if (form.cvv.value.length !== 3)
-            cvvError = true;
+        const creditCardNumberRegex = RegExp('\d{16}');
+        const cvvRegex = RegExp('\d{3}');
+
+        creditCardNumberError = creditCardNumberRegex.test(form.creditCardNumber.value);
+        cvvError = cvvRegex.test(form.cvv.value)
+
         if (creditCardNumberError || cvvError) //a little bit of performance check
             this.setState({
                 creditCardNumberError : creditCardNumberError,
