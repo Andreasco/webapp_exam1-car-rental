@@ -39,7 +39,7 @@ const PriceDialog = (props) => {
                                         fee:</b> {props.fees["extraInsuranceFee"]}€</ListGroup.Item>
                                     }
                                     {props.fees["fewVehiclesFee"] !== "0" &&
-                                    <ListGroup.Item><b>Few vehicles fee:</b> {props.fees["extraInsuranceFee"]}€</ListGroup.Item>
+                                    <ListGroup.Item><b>Few vehicles fee:</b> {props.fees["fewVehiclesFee"]}€</ListGroup.Item>
                                     }
                                     {props.fees["frequentCustomerFee"] !== "0" &&
                                     <ListGroup.Item><b>Frequent customer discount:</b> {props.fees["frequentCustomerFee"]}€</ListGroup.Item>
