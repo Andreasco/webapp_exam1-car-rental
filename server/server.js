@@ -6,7 +6,7 @@ const jwt = require('express-jwt');
 const jsonwebtoken = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 
-// Custom files
+//Custom files
 const utility = require('./utility');
 const translationArrays = require('./translationArrays');
 
@@ -107,7 +107,7 @@ app.use(
 );
 
 // To return a better object in case of errors
-app.use(function (err, req, res) {
+app.use(function (err, req, res, next) {
     if (err.name === 'UnauthorizedError') {
         res.status(401).json(authErrorObj);
     }
@@ -194,7 +194,7 @@ app.post('/bank/payment', (req, res) => {
                         console.log(`User: ${user}`);
                         reservationDao.getReservations(user)
                             .then((userReservations) => {
-                                const serverPriceData = utility.calculatePrice(reservation, carsForCategory, nonValidCars, userReservations)
+                                const serverPriceData = utility.calculatePrice(reservation, carsForCategory, nonValidCars, userReservations);
                                 if (utility.checkPaymentData(paymentData, reservation, serverPriceData))
                                     res.status(200).end();
                                 else
@@ -221,20 +221,23 @@ app.post('/api/reservations', (req,res) => {
         res.status(400).end();
     } else {
         const user = req.user && req.user.user;
-
         // I need to "translate" the reservation because some fields are numbers and i need the string meaning
         const reservationTranslated = {...reservation};
         reservationTranslated.carCategory = translationArrays.carCategoryArray[parseInt(reservation.carCategory)];
         reservationTranslated.driverAge = translationArrays.driverAgeArray[parseInt(reservation.driverAge)];
         reservationTranslated.kmPerDay = translationArrays.kmPerDayArray[parseInt(reservation.kmPerDay)];
-
         reservationTranslated.user = user;
-        if (utility.checkReservationData(reservationTranslated))
+        console.log("RESERVATION POST");
+        if (utility.checkReservationData(reservationTranslated)) {
             reservationDao.createReservation(reservationTranslated)
-                .then((id) => res.status(201).json({"id" : id}))
+                .then((id) => res.status(201).json({"id": id}))
                 .catch((err) => {
                     res.status(500).json({errors: [{'param': 'Server', 'msg': err}],})
                 });
+        }
+        else{
+            res.status(400).json({errors: [{'param': 'Client', 'msg': "There are errors in reservation data"}],})
+        }
     }
 });
 

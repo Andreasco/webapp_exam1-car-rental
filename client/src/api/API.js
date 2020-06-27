@@ -49,7 +49,7 @@ async function getReservations() {
             return reservationsJson;
         else
             return reservationsJson.map((r) => new Reservation(r.id, r.startingDay, r.endingDay, r.carCategory, r.driverAge,
-                r.kmPerDay, r.extraDrivers, r.extraInsurance, r.price, r.user));
+                r.kmPerDay, r.extraDrivers, r.extraInsurance === "1", r.price, r.user));
     } else {
         throw {status: response.status, errObj:reservationsJson};  // An object with the error coming from the server
     }
@@ -72,40 +72,6 @@ async function getPriceData(reservation) {
     }
 }
 
-/*async function getAvailableCars(reservation) {
-    let url = "/availableCars";
-    const response = await fetch(baseURL + url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(reservation),
-    });
-    const availableCarsJson = await response.json();
-    if(response.ok){
-        return availableCarsJson["availableCars"]; // a string rappresenting a number
-    } else {
-        throw {status: response.status, errObj:availableCarsJson};  // An object with the error coming from the server
-    }
-}*/
-
-/*async function getNumberOfCarsForCategory(category) {
-    let url = "/carsForCategory";
-    const response = await fetch(baseURL + url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(category),
-    });
-    const numberOfCarsJson = await response.json();
-    if(response.ok){
-        return numberOfCarsJson["carForCategory"]; // a string rappresenting a number
-    } else {
-        throw {status: response.status, errObj:numberOfCarsJson};  // An object with the error coming from the server
-    }
-}*/
-
 async function verifyPayment(paymentData) {
     const baseURL = "/bank";
     const url = "/payment";
@@ -118,6 +84,7 @@ async function verifyPayment(paymentData) {
     });
     const responseData = await response.text();
     if(response.ok) {
+        console.log(responseData);
         return responseData;
     }else {
         throw {status: response.status, errObj:response};  // An object with the error coming from the server
@@ -134,6 +101,7 @@ async function addReservation(reservation) {
             body: JSON.stringify(reservation),
         }).then( (response) => {
             if(response.ok) {
+                console.log("addReservation inside API");
                 resolve(null);
             } else {
                 // analyze the cause of error

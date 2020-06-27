@@ -1,26 +1,6 @@
-const translationArrays = require('./translationArrays');
-const priceTable = require('./priceTable');
 const moment = require('moment');
-
-exports.checkReservationData = (reservation) => {
-    const startingDay = moment(reservation.startingDay);
-    const endingDay = moment(reservation.endingDay);
-
-    const datesOk = endingDay.isAfter(startingDay);
-    const carCategoryOk = translationArrays.carCategoryArray.includes(reservation.carCategory);
-    const driversAgeOk = translationArrays.driverAgeArray.includes(reservation.driverAge);
-    const kmPerDayOk = translationArrays.kmPerDayArray.includes(reservation.kmPerDay);
-    const extraDriversOk = reservation.extraDrivers >= 0;
-
-    return datesOk && carCategoryOk && driversAgeOk && kmPerDayOk && extraDriversOk;
-}
-
-exports.checkPaymentData = (paymentData ,reservation, serverPriceData) => {
-    const priceOk = serverPriceData["totalPrice"] === reservation["price"];
-    const creditCardOk = paymentData["creditCardNumber"].length === 16;
-    const cvvOk = paymentData["cvv"].length === 3;
-    return priceOk && creditCardOk && cvvOk;
-}
+const priceTable = require('./priceTable');
+const translationArrays = require('./translationArrays');
 
 exports.calculatePrice = (reservation, carsForCategory, nonValidCars, userReservations) => {
     const duration = calculateDuration(reservation)
@@ -69,3 +49,26 @@ const calculateDuration = (reservation) => {
     return b.diff(a, 'days') + 1 + "";
 }
 
+exports.checkPaymentData = (paymentData ,reservation, serverPriceData) => {
+    const creditCardNumberRegex = RegExp('\\d{16}');
+    const cvvRegex = RegExp('\\d{3}');
+
+    const priceOk = serverPriceData["totalPrice"] === reservation["price"];
+    const creditCardOk = creditCardNumberRegex.test(paymentData["creditCardNumber"]);
+    const cvvOk = cvvRegex.test(paymentData["cvv"]);
+    console.log(priceOk && creditCardOk && cvvOk);
+    return priceOk && creditCardOk && cvvOk;
+}
+
+exports.checkReservationData = (reservation) => {
+    const startingDay = moment(reservation.startingDay);
+    const endingDay = moment(reservation.endingDay);
+
+    const datesOk = endingDay.isSameOrAfter(startingDay);
+    const carCategoryOk = translationArrays.carCategoryArray.includes(reservation.carCategory);
+    const driversAgeOk = translationArrays.driverAgeArray.includes(reservation.driverAge);
+    const kmPerDayOk = translationArrays.kmPerDayArray.includes(reservation.kmPerDay);
+    const extraDriversOk = reservation.extraDrivers >= 0;
+
+    return datesOk && carCategoryOk && driversAgeOk && kmPerDayOk && extraDriversOk;
+}
