@@ -311,9 +311,12 @@ app.post('/bank/payment', (req, res) => {
 });
 
 const checkPaymentData = (paymentData ,reservation, serverPriceData) => {
+    const creditCardNumberRegex = RegExp('\\d{16}');
+    const cvvRegex = RegExp('\\d{3}');
+
     const priceOk = serverPriceData["totalPrice"] === reservation["price"];
-    const creditCardOk = paymentData["creditCardNumber"].length === 16;
-    const cvvOk = paymentData["cvv"].length === 3;
+    const creditCardOk = creditCardNumberRegex.test(paymentData["creditCardNumber"]);
+    const cvvOk = cvvRegex.test(paymentData["cvv"]);
     return priceOk && creditCardOk && cvvOk;
 }
 
