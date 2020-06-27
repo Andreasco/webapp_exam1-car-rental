@@ -108,6 +108,7 @@ class InteractiveConfiguration extends Component {
                     .then(() => {
                         console.log("API.addReservation");
                         this.setState({reservationSuccess : true});
+                        this.resetForm();
                     })
                     .catch(() => {
                         this.setState({reservationFailure : true});
@@ -116,24 +117,34 @@ class InteractiveConfiguration extends Component {
             .catch(() => {
                 this.setState({reservationFailure : true}); //i should never get here
             });
-        this.setState({showPayment : false});
+    }
 
-        /*const reservationWithPrice = this.createReservation();
-        reservationWithPrice.price = this.state.totalPrice;
+    resetForm = () => {
+        //reset the rental form and hide the prize
+        const emptyRentalForm = {
+            startingDay: "",
+            endingDay: "",
+            carCategory: "",
+            driverAge: "",
+            kmPerDay: "",
+            extraDrivers: "0",
+            extraInsurance: false,
+        }
 
-        const data = {
-            paymentData : paymentData,
-            reservation : reservationWithPrice
-        };
+        const emptyFilled = {
+            startingDay: false,
+            endingDay : false,
+            carCategory : false,
+            driverAge : false,
+            kmPerDay : false
+        }
 
-        API.verifyPayment(data)
-            .then(() => { //i don't need the response
-                this.setState({reservationSuccess : true});
-            })
-            .catch(() => {
-                this.setState({reservationFailure : true});
-            });
-        this.setState({showPayment : false});*/
+        this.setState({
+            rentalForm : emptyRentalForm,
+            filled : emptyFilled,
+            showPrize : false,
+            showPayment : false
+        });
     }
 
     cancelPayment = () => {
