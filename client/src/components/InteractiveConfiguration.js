@@ -142,7 +142,7 @@ class InteractiveConfiguration extends Component {
         this.setState({
             rentalForm : emptyRentalForm,
             filled : emptyFilled,
-            showPrize : false,
+            showPrice : false,
             showPayment : false
         });
     }
