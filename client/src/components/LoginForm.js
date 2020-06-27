@@ -8,7 +8,7 @@ import Alert from "react-bootstrap/Alert";
 class LoginForm extends Component {
     constructor(props) {
         super(props);
-        this.state = {username: '', password: '', submitted: false};
+        this.state = {username: '', password: ''};
     }
 
     onChangeHandler = (event) => {
@@ -18,7 +18,6 @@ class LoginForm extends Component {
     submitHandler = (event, onLogin) => {
         event.preventDefault();
         onLogin(this.state.username, this.state.password);
-        this.setState({submitted : true}); //forse non mi serve
     }
 
     render() {

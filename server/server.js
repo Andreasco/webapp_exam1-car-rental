@@ -157,7 +157,7 @@ app.post('/api/price', (req, res) => {
                         const user = req.user && req.user.user;
                         reservationDao.getReservations(user)
                             .then((userReservations) => {
-                                const serverPriceData = utility.calculatePrice(reservation, carsForCategory, nonValidCars, userReservations)
+                                const serverPriceData = utility.calculatePrice(reservation, carsForCategory, nonValidCars, userReservations);
                                 res.json(serverPriceData);
                             })
                             .catch((err) => {
