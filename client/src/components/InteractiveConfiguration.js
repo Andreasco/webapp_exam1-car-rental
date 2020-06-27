@@ -103,8 +103,10 @@ class InteractiveConfiguration extends Component {
 
         API.verifyPayment(data)
             .then(() => { //the response should always be ok
+                console.log("API.verifyPayment");
                 API.addReservation(reservationWithPrice)
                     .then(() => {
+                        console.log("API.addReservation");
                         this.setState({reservationSuccess : true});
                     })
                     .catch(() => {
@@ -112,7 +114,7 @@ class InteractiveConfiguration extends Component {
                     })
             })
             .catch(() => {
-                this.setState({reservationFailure : true}); //i should never get here because
+                this.setState({reservationFailure : true}); //i should never get here
             });
         this.setState({showPayment : false});
 
