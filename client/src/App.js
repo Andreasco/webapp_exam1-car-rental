@@ -86,7 +86,7 @@ class App extends Component {
     login = (username, password) => {
         API.userLogin(username, password).then(
             (user) => {
-                this.setState({authUser: user, authErr: null});
+                this.setState({autghUser: user, authErr: null});
                 this.props.history.push("/");
             }
         ).catch(

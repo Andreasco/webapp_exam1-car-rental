@@ -10,7 +10,8 @@ async function isAuthenticated(){
     if(response.ok){
         return userJson; //user object
     } else {
-        throw {status: response.status, errObj:userJson};  // An object with the error coming from the server
+        const err = {status: response.status, errObj:userJson}
+        throw err;  // An object with the error coming from the server
     }
 }
 
@@ -21,7 +22,8 @@ async function getCars() {
     if(response.ok){
         return carsJson.map((c) => new Car(c.model, c.brand, c.category));
     } else {
-        throw {status: response.status, errObj:carsJson};  // An object with the error coming from the server
+        const err = {status: response.status, errObj:carsJson}
+        throw err;  // An object with the error coming from the server
     }
 }
 
@@ -36,7 +38,8 @@ async function getBrands() {
         }
         return brandsArray; //string array
     } else {
-        throw {status: response.status, errObj:brandsJson};  // An object with the error coming from the server
+        const err = {status: response.status, errObj:brandsJson}
+        throw err;  // An object with the error coming from the server
     }
 }
 
@@ -51,7 +54,8 @@ async function getReservations() {
             return reservationsJson.map((r) => new Reservation(r.id, r.startingDay, r.endingDay, r.carCategory, r.driverAge,
                 r.kmPerDay, r.extraDrivers, r.extraInsurance === "1", r.price, r.user));
     } else {
-        throw {status: response.status, errObj:reservationsJson};  // An object with the error coming from the server
+        const err = {status: response.status, errObj:reservationsJson}
+        throw err;  // An object with the error coming from the server
     }
 }
 
@@ -68,7 +72,8 @@ async function getPriceData(reservation) {
     if(response.ok) {
         return priceDataJson;
     }else {
-        throw {status: response.status, errObj:priceDataJson};  // An object with the error coming from the server
+        const err = {status: response.status, errObj:priceDataJson}
+        throw err;  // An object with the error coming from the server
     }
 }
 
@@ -87,7 +92,8 @@ async function verifyPayment(paymentData) {
         console.log(responseData);
         return responseData;
     }else {
-        throw {status: response.status, errObj:response};  // An object with the error coming from the server
+        const err = {status: response.status, errObj:response}
+        throw err;  // An object with the error coming from the server
     }
 }
 
