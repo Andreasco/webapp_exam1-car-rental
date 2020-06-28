@@ -3,7 +3,6 @@ import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Alert from "react-bootstrap/Alert";
-import Col from "react-bootstrap/Col";
 
 const Showroom = (props) => {
 

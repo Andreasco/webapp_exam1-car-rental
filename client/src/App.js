@@ -79,7 +79,8 @@ class App extends Component {
     login = (username, password) => {
         API.userLogin(username, password).then(
             (user) => {
-                this.setState({authUser: user, authErr: null});
+                const expireTime = 900;
+                this.setState({authUser: user, authErr: null},() => setTimeout(this.tokenTimeout,expireTime*1000));
                 this.props.history.push("/");
             }
         ).catch(
@@ -88,6 +89,11 @@ class App extends Component {
                 this.setState({authErr: err0});
             }
         );
+    }
+
+    tokenTimeout = () => {
+        alert("Your login session is expired, you're about to be logged out.");
+        this.logout();
     }
 
     logout = () => {
