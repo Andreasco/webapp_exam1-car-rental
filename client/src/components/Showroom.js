@@ -2,6 +2,8 @@ import React from 'react';
 import Card from "react-bootstrap/Card";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
+import Alert from "react-bootstrap/Alert";
+import Col from "react-bootstrap/Col";
 
 const Showroom = (props) => {
 
@@ -22,7 +24,13 @@ const Showroom = (props) => {
     return (
         <Container fluid>
             <Row>
-                {props.cars.map(createCard)}
+                {props.cars.length === 0 ?
+
+                    <Alert variant="primary">
+                        There are no cars for those filters.
+                    </Alert>
+
+                    : props.cars.map(createCard)}
             </Row>
         </Container>
     );
