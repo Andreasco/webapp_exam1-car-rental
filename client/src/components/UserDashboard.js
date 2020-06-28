@@ -19,6 +19,7 @@ class UserDashboard extends Component {
         this.state = {
             pastReservations : [],
             futureReservations : [],
+            currentReservations : [],
             activeRows : {},
             selectedReservationsIds : []
         }
@@ -34,11 +35,15 @@ class UserDashboard extends Component {
             .then((reservations) => {
                 const pastReservations = [];
                 const futureReservations = [];
+                const currentReservations = [];
                 const activeRows = {};
                 reservations.forEach((reservation, index) => {
                     const today = moment().format("YYYY-MM-DD");
                     if (moment(reservation.endingDay).isBefore(today))
                         pastReservations.push(reservation);
+                    else if (moment(reservation.startingDay).isSameOrBefore(today) &&
+                                moment(reservation.endingDay).isSameOrAfter(today))
+                        currentReservations.push(reservation);
                     else {
                         futureReservations.push(reservation);
                         activeRows[index] = false;
@@ -48,6 +53,7 @@ class UserDashboard extends Component {
                 this.setState({
                     pastReservations : pastReservations,
                     futureReservations : futureReservations,
+                    currentReservations : currentReservations,
                     activeRows : activeRows
                 })
             })
@@ -72,7 +78,7 @@ class UserDashboard extends Component {
         )
     }
 
-    createBodyPast = (reservation, rowIndex) => {
+    createBody = (reservation, rowIndex) => {
         return (
             <tr key={rowIndex}>
                 <td>{reservation.startingDay}</td>
@@ -119,8 +125,8 @@ class UserDashboard extends Component {
                             <Container>
                                 <h1>Hello {context.authUser ? context.authUser.name : null}! Welcome to your dashboard.</h1>
                                 <p>
-                                    Here you can check your future and past reservations, moreover you can cancel any
-                                    future reservation you want.
+                                    Here you can check your past, current and future reservations, moreover you can
+                                    cancel any future reservation you want.
                                 </p>
                             </Container>
                         </Jumbotron>
@@ -142,7 +148,26 @@ class UserDashboard extends Component {
                                     </tr>
                                     </thead>
                                     <tbody>
-                                    {this.state.pastReservations.map((r, i) => this.createBodyPast(r, i))}
+                                    {this.state.pastReservations.map((r, i) => this.createBody(r, i))}
+                                    </tbody>
+                                </Table>
+
+                                <h2>Current rentals</h2>
+                                <Table responsive>
+                                    <thead>
+                                    <tr>
+                                        <th>Starting day</th>
+                                        <th>Ending day</th>
+                                        <th>Car category</th>
+                                        <th>Driver's age</th>
+                                        <th>Kilometers per day</th>
+                                        <th>Extra drivers</th>
+                                        <th>Extra insurance</th>
+                                        <th>Price</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {this.state.currentReservations.map((r, i) => this.createBody(r, i))}
                                     </tbody>
                                 </Table>
 
