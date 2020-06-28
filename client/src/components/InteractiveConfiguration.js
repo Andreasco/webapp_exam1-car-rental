@@ -10,6 +10,8 @@ import ReservationAlertSuccess from "./ReservationAlertSuccess";
 import ReservationAlertFailure from "./ReservationAlertFailure";
 
 class InteractiveConfiguration extends Component {
+    static contextType = AuthContext;
+
     constructor(props) {
         super(props);
 

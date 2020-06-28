@@ -11,6 +11,8 @@ import API from "../api/API";
 import moment from "moment";
 
 class UserDashboard extends Component {
+    static contextType = AuthContext;
+
     constructor(props) {
         super(props);
 
