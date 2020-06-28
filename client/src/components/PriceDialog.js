@@ -18,7 +18,7 @@ const PriceDialog = (props) => {
                     <Row className="justify-content-end">
                         <Col sm={6}>
                             <Row>
-                                {props.numberOfCarsAvailable !== 0 &&
+                                {props.numberOfCarsAvailable !== "0" &&
                                 <ListGroup className="text-right" variant="flush">
                                     <ListGroup.Item>
                                         <b>Duration of the rental:</b> {props.duration} day{props.duration === "1" ? "" : "s"}
@@ -49,8 +49,9 @@ const PriceDialog = (props) => {
                                 }
                             </Row>
 
+                            {props.numberOfCarsAvailable !== "0" &&
                             <Row className="justify-content-end mr-5 mt-2">
-                                <Button disabled={props.numberOfCarsAvailable === "0"} variant="warning" onClick={props.goToPayment}>Go to payment</Button>
+                                <Button variant="warning" onClick={props.goToPayment}>Go to payment</Button>
                                 <PaymentForm
                                     show={props.showPayment}
                                     pay={props.pay}
@@ -58,6 +59,7 @@ const PriceDialog = (props) => {
                                     totalPrice={props.totalPrice}
                                 />
                             </Row>
+                            }
                         </Col>
                     </Row>
 

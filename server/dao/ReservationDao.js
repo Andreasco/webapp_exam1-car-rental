@@ -51,11 +51,12 @@ exports.deleteReservation = function(id) {
 
 exports.getNonValidCars = function (reservation) {
     return new Promise((resolve, reject) => {
-        const sql = "SELECT COUNT(*) FROM reservations as r WHERE r.carCategory = ? AND (r.startingDay >= ? AND r.startingDay <= ?) OR (r.endingDay >= ? AND r.endingDay <= ?)"
+        const sql = "SELECT COUNT(*) FROM reservations as r WHERE r.carCategory = ? AND ((r.startingDay >= ? AND r.startingDay <= ?) OR (r.endingDay >= ? AND r.endingDay <= ?))"
         db.get(sql, [reservation.carCategory, reservation.startingDay, reservation.endingDay, reservation.startingDay, reservation.endingDay], (err, row) => {
             if (err)
                 reject(err);
             else if (row) {
+                console.log(row);
                 resolve(row["COUNT(*)"]);
             }
             else{
