@@ -94,7 +94,7 @@ class App extends Component {
         API.userLogout()
             .then(() => {
                 this.setState({authUser: null,authErr: null});
-                API.getReservations().catch((errorObj)=>{this.handleErrors(errorObj)}); //TODO capire perchè si fa, probabilmente per chiamare volutamente la catch
+                API.getReservations().catch((errorObj)=>{this.handleErrors(errorObj)});
             })
             .catch((errorObj) => { //shouldn't happen, only in case of network problems
                 this.handleErrors(errorObj);
