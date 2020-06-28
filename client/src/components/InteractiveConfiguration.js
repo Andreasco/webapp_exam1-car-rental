@@ -80,7 +80,7 @@ class InteractiveConfiguration extends Component {
                     });
                 })
                 .catch((errorObj) => {
-                    this.props.onError(errorObj);
+                    this.context.handleErrors(errorObj);
                 });
         }
         else {

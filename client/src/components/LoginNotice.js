@@ -3,7 +3,7 @@ import Container from "react-bootstrap/Container";
 import Jumbotron from "react-bootstrap/Jumbotron";
 import {AuthContext} from '../auth/AuthContext'
 
-// get fontawesome imports
+// Fontawesome imports
 import { faHandPointUp } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 

@@ -7,9 +7,8 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 
 class SideBar extends Component {
 
+    // Dinamic creation of the buttons for the brands
     createBrand = (brand) => {
-        // dinamic creation of the buttons for brands
-        // should be ok
         return(
             <ListGroup.Item key={brand}>
                 <ButtonGroup toggle className="mb-2">
@@ -31,7 +30,7 @@ class SideBar extends Component {
     render() {
         return (
             <>
-                <ListGroup id="left-sidebar" as="ul" variant="flush">
+                <ListGroup id="left-sidebar" variant="flush">
                     <ListGroup.Item className="p-3 list-title">
                         <b>Car category</b>
                     </ListGroup.Item>

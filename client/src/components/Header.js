@@ -24,12 +24,7 @@ const Header = () => {
                             <NavLink className="nav-link" to="/showroom">Showroom</NavLink>
                             <NavLink className="nav-link" to="/booking">Booking</NavLink>
                         </Nav>
-                        {!context.authUser &&
-                            <LoginForm/>
-                        }
-                        {context.authUser &&
-                            <LoggedUser/>
-                        }
+                        {context.authUser ? <LoggedUser/> : <LoginForm/>}
                     </Navbar.Collapse>
                 </Navbar>
             )}

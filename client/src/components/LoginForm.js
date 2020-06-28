@@ -25,6 +25,12 @@ class LoginForm extends Component {
             <AuthContext.Consumer>
                 {(context) => (
                     <>
+                        {context.authErr &&
+                        <Alert className="mr-2" variant="danger">
+                            {context.authErr.msg}
+                        </Alert>
+                        }
+
                         <Form inline method="POST" onSubmit={(event) => this.submitHandler(event, context.loginUser)}>
                             <FormControl type="text" name="username" placeholder="Username"
                                          className="mr-sm-2" value = {this.state.username}
@@ -34,12 +40,6 @@ class LoginForm extends Component {
                                          onChange={(event => this.onChangeHandler(event))} required/>
                             <Button variant="outline-light" type="submit">Login</Button>
                         </Form>
-
-                        {context.authErr &&
-                        <Alert variant= "danger">
-                            {context.authErr.msg}
-                        </Alert>
-                        }
                     </>
                 )}
             </AuthContext.Consumer>

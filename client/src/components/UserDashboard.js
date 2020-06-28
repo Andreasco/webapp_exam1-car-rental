@@ -26,27 +26,32 @@ class UserDashboard extends Component {
         this.init();
     }
 
+    //I need this in a separate function to be able to call it after a deletion
     init = () => {
-        API.getReservations().then((reservations) => {
-            const pastReservations = [];
-            const futureReservations = [];
-            const activeRows = {};
-            reservations.forEach((reservation, index) => {
-                const today = moment().format("YYYY-MM-DD");
-                if (moment(reservation.endingDay).isBefore(today))
-                    pastReservations.push(reservation);
-                else {
-                    futureReservations.push(reservation);
-                    activeRows[index] = false;
-                }
-            });
+        API.getReservations()
+            .then((reservations) => {
+                const pastReservations = [];
+                const futureReservations = [];
+                const activeRows = {};
+                reservations.forEach((reservation, index) => {
+                    const today = moment().format("YYYY-MM-DD");
+                    if (moment(reservation.endingDay).isBefore(today))
+                        pastReservations.push(reservation);
+                    else {
+                        futureReservations.push(reservation);
+                        activeRows[index] = false;
+                    }
+                });
 
-            this.setState({
-                pastReservations : pastReservations,
-                futureReservations : futureReservations,
-                activeRows : activeRows
+                this.setState({
+                    pastReservations : pastReservations,
+                    futureReservations : futureReservations,
+                    activeRows : activeRows
+                })
             })
-        });
+            .catch((err) => {
+                this.context.handleErrors(err);
+            });
     }
 
     createBodyFuture = (reservation, rowIndex) => {

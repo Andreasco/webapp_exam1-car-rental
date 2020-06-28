@@ -37,13 +37,13 @@ class App extends Component {
     }
 
     componentDidMount() {
-        API.isAuthenticated().then(
-            (user) => {
+        API.isAuthenticated()
+            .then((user) => {
                 this.setState({authUser: user});
-            }
-        ).catch((err) => {
-            this.setState({authErr: err.errorObj});
-        });
+            })
+            .catch((err) => {
+                this.setState({authErr: err.errorObj});
+            });
 
         API.getCars()
             .then((c) => {
@@ -74,14 +74,7 @@ class App extends Component {
             });
     }
 
-    handleErrors = (err) => {
-        if (err) {
-            if (err.status && err.status === 401) {
-                this.setState({authErr: err.errorObj});
-                this.props.history.push("/");
-            }
-        }
-    }
+    // Utility functions
 
     login = (username, password) => {
         API.userLogin(username, password).then(
@@ -98,10 +91,14 @@ class App extends Component {
     }
 
     logout = () => {
-        API.userLogout().then(() => {
-            this.setState({authUser: null,authErr: null});
-            API.getReservations().catch((errorObj)=>{this.handleErrors(errorObj)}); //TODO capire perchè si fa, probabilmente per chiamare volutamente la catch
-        });
+        API.userLogout()
+            .then(() => {
+                this.setState({authUser: null,authErr: null});
+                API.getReservations().catch((errorObj)=>{this.handleErrors(errorObj)}); //TODO capire perchè si fa, probabilmente per chiamare volutamente la catch
+            })
+            .catch((errorObj) => { //shouldn't happen, only in case of network problems
+                this.handleErrors(errorObj);
+            });
     }
 
     filter = () => {
@@ -146,6 +143,8 @@ class App extends Component {
         }
     }
 
+    // Handlers
+
     setCheckedCategories = (event) => {
         const newCategories = {...this.state.categories_checkbox};
         newCategories[event.target.name] = event.target.checked;
@@ -158,13 +157,23 @@ class App extends Component {
         this.setState({brands_checkbox : newBrands}, this.filter);
     }
 
+    handleErrors = (err) => {
+        if (err) {
+            if (err.status && err.status === 401) {
+                this.setState({authErr: err.errorObj});
+                this.props.history.push("/");
+            }
+        }
+    }
+
     render () {
         // values to save in the context
         const value = {
             authUser: this.state.authUser,
             authErr: this.state.authErr,
             loginUser: this.login,
-            logoutUser: this.logout
+            logoutUser: this.logout,
+            handleErrors: this.handleErrors
         }
 
         return(
@@ -202,7 +211,7 @@ class App extends Component {
                         <Route path="/booking">
                             <Row className="vheight-100">
                                 <Col sm={12} className="below-nav">
-                                    <InteractiveConfiguration onError={this.handleErrors}/>
+                                    <InteractiveConfiguration/>
                                 </Col>
                             </Row>
                         </Route>
