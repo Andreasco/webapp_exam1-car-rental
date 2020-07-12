@@ -52,7 +52,7 @@ app.post('/api/login', (req, res) => {
                     //AUTHENTICATION SUCCESS
                     const token = jsonwebtoken.sign({ user: user.id }, jwtSecret, {expiresIn: expireTime});
                     res.cookie('token', token, { httpOnly: true, sameSite: true, maxAge: 1000*expireTime });
-                    res.json({id: user.id, name: user.name});
+                    res.json({id: user.id, username: user.username, name: user.name}); //should have added username: user.username
                 }
             }
         }).catch(
@@ -120,7 +120,7 @@ app.get('/api/user', (req,res) => {
     const user = req.user && req.user.user;
     userDao.getUserById(user)
         .then((user) => {
-            res.json({id: user.id, name: user.name});
+            res.json({id: user.id, username: user.username, name: user.name}); //should have added username: user.username
         }).catch(
         (err) => {
             res.status(401).json(authErrorObj);
