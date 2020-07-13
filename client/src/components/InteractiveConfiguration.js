@@ -10,7 +10,8 @@ import ReservationAlertSuccess from "./ReservationAlertSuccess";
 import ReservationAlertFailure from "./ReservationAlertFailure";
 
 class InteractiveConfiguration extends Component {
-    static contextType = AuthContext;
+    static contextType = AuthContext; //it is used to be able to use the context also outside of render and therefore of
+    // Context.Consumer, I need the context for the function that handles errors
 
     constructor(props) {
         super(props);

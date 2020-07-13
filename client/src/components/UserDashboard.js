@@ -11,7 +11,8 @@ import API from "../api/API";
 import moment from "moment";
 
 class UserDashboard extends Component {
-    static contextType = AuthContext;
+    static contextType = AuthContext; //it is used to be able to use the context also outside of render and therefore of
+    // Context.Consumer, I need the context for the function that handles errors
 
     constructor(props) {
         super(props);
@@ -36,8 +37,7 @@ class UserDashboard extends Component {
                 const pastReservations = [];
                 const futureReservations = [];
                 const currentReservations = [];
-                const activeRows = {};
-                reservations.forEach((reservation, index) => {
+                reservations.forEach((reservation) => {
                     const today = moment().format("YYYY-MM-DD");
                     if (moment(reservation.endingDay).isBefore(today))
                         pastReservations.push(reservation);
@@ -46,7 +46,6 @@ class UserDashboard extends Component {
                         currentReservations.push(reservation);
                     else {
                         futureReservations.push(reservation);
-                        activeRows[index] = false;
                     }
                 });
 
@@ -54,7 +53,6 @@ class UserDashboard extends Component {
                     pastReservations : pastReservations,
                     futureReservations : futureReservations,
                     currentReservations : currentReservations,
-                    activeRows : activeRows
                 })
             })
             .catch((err) => {

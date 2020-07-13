@@ -202,6 +202,8 @@ class App extends Component {
                                 <Col sm={4} bg="light" id="left-sidebar" className="col-12 col-md-3 col-xl-2 below-nav">
                                     <SideBar onCheckCategories = {this.setCheckedCategories}
                                              onCheckBrands = {this.setCheckedBrands}
+                                             //I could have made a copy of the two checkboxes but maybe it wasn't necessary because
+                                             // I don't modify them directly
                                              categories_checkbox = {this.state.categories_checkbox}
                                              brands_checkbox = {this.state.brands_checkbox}
                                              brands = {this.state.brands}
